@@ -1,0 +1,63 @@
+
+<svg viewBox="0 0 360 250" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-full w-auto">
+  <!-- Monogram M: Left Mountain -->
+  <!-- Left outer ascending stroke -->
+  <path
+    d="M 35 215 L 115 45 L 152 45 L 72 215 Z"
+    fill="#FFFFFF"
+  />
+  <!-- Left inner descending stroke to center trough -->
+  <path
+    d="M 115 45 L 175 168 L 195 128 L 148 45 Z"
+    fill="#FFFFFF"
+  />
+  <!-- Bottom center trough vertex -->
+  <path
+    d="M 175 168 L 160 200 L 132 142 L 152 110 Z"
+    fill="#FFFFFF"
+  />
+  <!-- Center ascending stroke along arrow -->
+  <path
+    d="M 175 168 L 208 102 L 224 118 L 192 198 L 160 200 Z"
+    fill="#FFFFFF"
+  />
+
+  <!-- The Upward Launch Growth Arrow -->
+  <!-- Arrow shaft and swept-wing arrowhead -->
+  <path
+    d="M 198 122 L 222 138 L 232 116 L 210 100 Z"
+    fill="#0066FF"
+    stroke="#0066FF"
+    stroke-width="1.5"
+  />
+  <path
+    d="M 218 95 L 254 32 L 194 72 L 214 84 L 202 108 L 216 116 L 226 94 Z"
+    fill="#0066FF"
+    stroke="#0066FF"
+    stroke-width="1.5"
+    stroke-linejoin="round"
+  />
+
+  <!-- Top-Right Electric Blue Peak (The Motive signature) -->
+  <!-- Primary face: #0066FF -->
+  <path
+    d="M 248 32 L 298 32 L 264 100 L 238 100 Z"
+    fill="#0066FF"
+  />
+  <!-- 3D Isometric Bevel: #004BB5 -->
+  <path
+    d="M 264 100 L 288 148 L 268 148 L 248 108 Z"
+    fill="#004BB5"
+  />
+
+  <!-- Monogram M: Right Leg -->
+  <path
+    d="M 248 108 L 268 148 L 308 215 L 272 215 L 236 142 Z"
+    fill="#FFFFFF"
+  />
+  <!-- Right foot join -->
+  <path
+    d="M 246 195 L 308 215 L 272 215 L 230 195 Z"
+    fill="#FFFFFF"
+  />
+</svg>

@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 380" fill="none">
+  <!-- THE MOTIVE STUDIO OFFICIAL LOGO MARK -->
+  <g id="motive-logo-mark">
+    <!-- LEFT MOUNTAIN OF THE M -->
+    <!-- Left outer upward stroke & inner downward stroke forming the left apex and center V -->
+    <path
+      d="M 52 276 L 165 52 L 238 276 L 196 276 L 165 142 L 102 276 Z"
+      fill="#15181E"
+    />
+    
+    <!-- ASCENDING STEM TO ARROW -->
+    <path
+      d="M 238 276 L 204 276 L 275 125 L 305 155 Z"
+      fill="#15181E"
+    />
+
+    <!-- THE GROWTH ARROW (WHITE ON LIGHT / ACCENTED) -->
+    <!-- Arrowhead & Shaft -->
+    <path
+      d="M 245 220 L 295 130 L 270 125 L 342 56 L 358 132 L 332 120 L 280 220 Z"
+      fill="#FFFFFF"
+      stroke="#15181E"
+      stroke-width="2"
+      stroke-linejoin="round"
+    />
+
+    <!-- TOP-RIGHT ELECTRIC BLUE 3D FACET -->
+    <!-- Primary Top Face (Electric Blue #0066FF) -->
+    <path
+      d="M 334 52 L 418 52 L 368 152 L 342 152 L 355 122 L 342 56 Z"
+      fill="#0066FF"
+    />
+    <!-- 3D Shadow Bevel Facet (Royal Blue #004BB5) -->
+    <path
+      d="M 418 52 L 436 92 L 392 182 L 368 152 Z"
+      fill="#004BB5"
+    />
+
+    <!-- RIGHT LOWER LEG OF THE M -->
+    <path
+      d="M 358 178 L 392 182 L 442 276 L 398 276 L 372 222 L 345 222 Z"
+      fill="#15181E"
+    />
+  </g>
+
+  <!-- TYPOGRAPHY -->
+  <text x="270" y="328" text-anchor="middle" font-family="Montserrat, sans-serif" font-weight="900" font-size="28" letter-spacing="1.5" fill="#15181E">THE MOTIVE STUDIO</text>
+  <text x="270" y="358" text-anchor="middle" font-family="Montserrat, sans-serif" font-weight="600" font-size="12" letter-spacing="5" fill="#15181E">WE CREATE. YOU GROW.</text>
+</svg>

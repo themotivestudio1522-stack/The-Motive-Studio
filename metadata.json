@@ -1,0 +1,8 @@
+{
+  "name": "The Motive Studio",
+  "description": "Creative Digital Studio — Branding, UI/UX, Website Design, Web Development, Digital Marketing and Motion.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
