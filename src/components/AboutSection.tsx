@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, ShieldCheck, Mail, ArrowUpRight, CheckCircle2 } from 'lucide-react';
+import { Sparkles, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { useStudioContent } from '../context/StudioContentContext';
 import { LEADERSHIP_DATA } from '../data/studioData';
 import { ScrollReveal } from './ScrollReveal';

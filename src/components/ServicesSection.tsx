@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ServiceItem } from '../data/studioData';
-import { ArrowUpRight, Sparkles, Folder, ExternalLink } from 'lucide-react';
+import { ArrowUpRight, Folder, ExternalLink } from 'lucide-react';
 import { useStudioContent } from '../context/StudioContentContext';
 import { ScrollReveal } from './ScrollReveal';
 

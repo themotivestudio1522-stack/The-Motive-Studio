@@ -1,14 +1,14 @@
 import React from 'react';
-import { ArrowDown, ArrowUpRight, Sparkles, CheckCircle2, Folder } from 'lucide-react';
+import { ArrowDown, ArrowUpRight, Folder, BookOpen } from 'lucide-react';
 import { useStudioContent } from '../context/StudioContentContext';
-import { MotiveLogo } from './MotiveLogo';
 import { ScrollReveal } from './ScrollReveal';
 
 interface HeroProps {
   onStartProject: () => void;
+  onOpenEbook?: () => void;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onStartProject }) => {
+export const Hero: React.FC<HeroProps> = ({ onStartProject, onOpenEbook }) => {
   const { content } = useStudioContent();
   const { hero, branding } = content;
 
@@ -66,9 +66,9 @@ export const Hero: React.FC<HeroProps> = ({ onStartProject }) => {
             </p>
           </ScrollReveal>
 
-          {/* Action Button Pair */}
+          {/* Action Button Group */}
           <ScrollReveal variant="fade-up" duration={700} delay={250} threshold={0}>
-            <div className="flex items-center gap-4 flex-wrap mb-14">
+            <div className="flex items-center gap-3.5 flex-wrap mb-14">
               <a
                 href="#work"
                 className="inline-flex items-center justify-center gap-2 bg-[#0066ff] hover:bg-[#0052cc] text-white text-xs sm:text-sm font-bold px-6 py-3.5 rounded-full transition-all duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#0066ff]/30 active:translate-y-0 cursor-pointer"
@@ -90,10 +90,24 @@ export const Hero: React.FC<HeroProps> = ({ onStartProject }) => {
                 href="https://drive.google.com/drive/folders/1lQRNikZqauoSauelA4HnizeuOJos5RET?dmr=1&ec=wgc-drive-%5Bmodule%5D-goto"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/15 border border-white/15 text-neutral-300 hover:text-white text-xs sm:text-sm font-bold px-5 py-3.5 rounded-full transition-all duration-200 hover:-translate-y-1 active:translate-y-0 cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/15 border border-white/15 text-neutral-200 hover:text-white text-xs sm:text-sm font-bold px-5 py-3.5 rounded-full transition-all duration-200 hover:-translate-y-1 active:translate-y-0 cursor-pointer"
               >
                 <Folder className="w-4 h-4 text-[#7fb0ff]" />
                 <span>Drive Portfolios</span>
+              </a>
+
+              <a
+                href="#ebook"
+                onClick={(e) => {
+                  if (onOpenEbook) {
+                    e.preventDefault();
+                    onOpenEbook();
+                  }
+                }}
+                className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/15 border border-white/15 text-neutral-200 hover:text-white text-xs sm:text-sm font-bold px-5 py-3.5 rounded-full transition-all duration-200 hover:-translate-y-1 active:translate-y-0 cursor-pointer"
+              >
+                <BookOpen className="w-4 h-4 text-[#7fb0ff]" />
+                <span>Free Studio Ebook</span>
               </a>
             </div>
           </ScrollReveal>

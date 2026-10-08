@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { motion, type Variants } from 'framer-motion';
-import { Pencil, Edit3 } from 'lucide-react';
 import { StudioContentProvider, useStudioContent } from './context/StudioContentContext';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
@@ -76,17 +75,55 @@ function StudioApp() {
   // Scroll Progress Bar state
   const [scrollProgress, setScrollProgress] = useState<number>(0);
 
+  const handleRequestAdminAccess = () => {
+    if (sessionStorage.getItem('motive_owner_authenticated') === 'true') {
+      setIsDrawerOpen(true);
+    } else {
+      setIsOwnerAuthOpen(true);
+    }
+  };
+
   useEffect(() => {
     // Secret Founder Shortcut: Ctrl + Shift + E or Cmd + Shift + E
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'E' || e.key === 'e')) {
         e.preventDefault();
-        setIsOwnerAuthOpen(true);
+        if (sessionStorage.getItem('motive_owner_authenticated') === 'true') {
+          setIsDrawerOpen(true);
+        } else {
+          setIsOwnerAuthOpen(true);
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+
+    // Support URL path (/admin or /edit), hash (#admin or #edit), or query (?admin=1) for direct owner login prompt
+    const checkUrlForAdmin = () => {
+      const hash = window.location.hash.toLowerCase();
+      const search = window.location.search.toLowerCase();
+      const pathname = window.location.pathname.toLowerCase();
+      if (
+        hash === '#admin' ||
+        hash === '#edit' ||
+        search.includes('admin') ||
+        pathname.endsWith('/admin') ||
+        pathname.endsWith('/edit')
+      ) {
+        if (sessionStorage.getItem('motive_owner_authenticated') === 'true') {
+          setIsDrawerOpen(true);
+        } else {
+          setIsOwnerAuthOpen(true);
+        }
+      }
+    };
+    checkUrlForAdmin();
+    window.addEventListener('hashchange', checkUrlForAdmin);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('hashchange', checkUrlForAdmin);
+    };
+  }, [setIsDrawerOpen]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -155,7 +192,18 @@ function StudioApp() {
           animate="visible"
           variants={heroSectionVariants}
         >
-          <Hero onStartProject={scrollToContact} />
+          <Hero
+            onStartProject={scrollToContact}
+            onOpenEbook={() => {
+              const el = document.getElementById('ebook');
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+              } else {
+                setPreviewChapter(null);
+                setIsEbookModalOpen(true);
+              }
+            }}
+          />
         </motion.div>
 
         {/* 12 Services Grid with 2D/3D Animation, Video Editing, Reels & E-Books */}
@@ -271,25 +319,11 @@ function StudioApp() {
         </motion.div>
       </main>
 
-      {/* Footer with leadership and direct CMS trigger */}
-      <Footer onOpenOwnerAuth={() => setIsDrawerOpen(true)} />
+      {/* Footer */}
+      <Footer />
 
       {/* Official Studio Client Desk (Floating Bottom-Left) */}
       <StudioChatbot onStartProject={scrollToContact} />
-
-      {/* Floating Direct Edit Website Action Button (Always Accessible) */}
-      <div className="fixed bottom-6 right-6 z-40 flex items-center gap-2">
-        <button
-          type="button"
-          onClick={() => setIsDrawerOpen(true)}
-          className="flex items-center gap-2.5 bg-[#0066ff] hover:bg-[#0052cc] text-white px-5 py-3 rounded-full shadow-2xl hover:shadow-[#0066ff]/50 transition-all duration-200 hover:-translate-y-1 active:translate-y-0 border-2 border-white/20 cursor-pointer group"
-          title="Open Website & Logo Editor Panel"
-        >
-          <Pencil className="w-4 h-4 text-white group-hover:rotate-12 transition-transform duration-200" />
-          <span className="text-xs font-black tracking-wider uppercase">Edit Website (CMS)</span>
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse ml-0.5" />
-        </button>
-      </div>
 
       {/* Full Live Studio Content Management Drawer (Restricted Founder Access) */}
       <StudioEditDrawer />

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, ArrowUpRight, Edit3, Settings } from 'lucide-react';
+import { Menu, X, ArrowUpRight, Linkedin, Facebook, Instagram } from 'lucide-react';
 import { MotiveLogo } from './MotiveLogo';
 import { useStudioContent } from '../context/StudioContentContext';
 
@@ -10,7 +10,7 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ onStartProject }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { content, setIsDrawerOpen } = useStudioContent();
+  const { content } = useStudioContent();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,13 +22,17 @@ export const Header: React.FC<HeaderProps> = ({ onStartProject }) => {
 
   const navLinks = [
     { label: 'Services', href: '#services' },
-    { label: 'Work', href: '#work' },
+    { label: 'Portfolio', href: '#work' },
+    { label: 'Ebook', href: '#ebook' },
     { label: 'About', href: '#about' },
     { label: 'Process', href: '#process' },
-    { label: 'Ebook', href: '#ebook' },
     { label: 'Reviews', href: '#reviews' },
     { label: 'Blog', href: '#blog' },
   ];
+
+  const linkedinUrl = content.socials?.linkedin || 'https://www.linkedin.com/public-profile/settings/?trk=d_flagship3_profile_self_view_public_profile&lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base%3B6nDsZNWyQherCT0HW%2B%2FclA%3D%3D';
+  const facebookUrl = content.socials?.facebook || 'https://www.facebook.com/profile.php?id=61594971998869';
+  const instagramUrl = content.socials?.instagram || 'https://www.instagram.com/themotivestudio1522/';
 
   return (
     <header
@@ -40,7 +44,7 @@ export const Header: React.FC<HeaderProps> = ({ onStartProject }) => {
     >
       <div className="max-w-[1280px] mx-auto px-5 sm:px-8 flex items-center justify-between">
         {/* Zone 1: Official Logo with ample right spacing */}
-        <div className="flex items-center shrink-0 mr-8 lg:mr-12 xl:mr-16">
+        <div className="flex items-center shrink-0 mr-6 lg:mr-8 xl:mr-12">
           <a
             href="#home"
             className="flex items-center group transform transition-transform duration-300 ease-out hover:scale-105 active:scale-95 origin-left cursor-pointer"
@@ -56,7 +60,7 @@ export const Header: React.FC<HeaderProps> = ({ onStartProject }) => {
         </div>
 
         {/* Zone 2: Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-5 xl:gap-7 mr-4 xl:mr-8">
+        <nav className="hidden lg:flex items-center gap-4 xl:gap-6 mr-4">
           {navLinks.map((link) => (
             <a
               key={link.label}
@@ -68,19 +72,41 @@ export const Header: React.FC<HeaderProps> = ({ onStartProject }) => {
           ))}
         </nav>
 
-        {/* Zone 3: Primary action */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          {/* Prominent Edit Website / Logo Button */}
-          <button
-            type="button"
-            onClick={() => setIsDrawerOpen(true)}
-            className="inline-flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-semibold px-3.5 sm:px-4 py-2.5 rounded-full transition-all duration-200 border border-white/20 hover:border-white/40 cursor-pointer shadow-sm hover:scale-[1.02]"
-            title="Edit Website, Logo, Services & Content"
-          >
-            <Edit3 className="w-3.5 h-3.5 text-[#7fb0ff]" />
-            <span className="hidden sm:inline">Edit Website</span>
-            <span className="sm:hidden">Edit</span>
-          </button>
+        {/* Zone 3: Social Icons + Primary Action */}
+        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+          {/* Social Quick Icons (Desktop) */}
+          <div className="hidden xl:flex items-center gap-1.5 mr-1 pr-2 border-r border-white/15">
+            <a
+              href={linkedinUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="w-8 h-8 rounded-full bg-white/5 hover:bg-[#0066ff] border border-white/15 hover:border-[#0066ff] flex items-center justify-center text-white/80 hover:text-white transition-all duration-200"
+              title="LinkedIn Profile"
+              aria-label="LinkedIn"
+            >
+              <Linkedin className="w-3.5 h-3.5" />
+            </a>
+            <a
+              href={facebookUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="w-8 h-8 rounded-full bg-white/5 hover:bg-[#0066ff] border border-white/15 hover:border-[#0066ff] flex items-center justify-center text-white/80 hover:text-white transition-all duration-200"
+              title="Facebook Page"
+              aria-label="Facebook"
+            >
+              <Facebook className="w-3.5 h-3.5" />
+            </a>
+            <a
+              href={instagramUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="w-8 h-8 rounded-full bg-white/5 hover:bg-[#0066ff] border border-white/15 hover:border-[#0066ff] flex items-center justify-center text-white/80 hover:text-white transition-all duration-200"
+              title="Instagram"
+              aria-label="Instagram"
+            >
+              <Instagram className="w-3.5 h-3.5" />
+            </a>
+          </div>
 
           <button
             type="button"
@@ -118,19 +144,38 @@ export const Header: React.FC<HeaderProps> = ({ onStartProject }) => {
               </a>
             ))}
 
-            <div className="pt-2 space-y-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  setIsDrawerOpen(true);
-                }}
-                className="w-full flex items-center justify-center gap-2 bg-white/10 hover:bg-white/15 border border-white/20 text-white text-sm font-bold py-3 rounded-xl transition-colors cursor-pointer"
+            {/* Social Icons Row in Mobile Menu */}
+            <div className="flex items-center gap-2.5 pt-2 pb-1 px-1">
+              <a
+                href={linkedinUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/5 hover:bg-[#0066ff] border border-white/15 text-xs font-bold text-white transition-colors"
               >
-                <Edit3 className="w-4 h-4 text-[#7fb0ff]" />
-                <span>Edit Website &amp; Logo</span>
-              </button>
+                <Linkedin className="w-4 h-4 text-[#7fb0ff]" />
+                <span>LinkedIn</span>
+              </a>
+              <a
+                href={facebookUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/5 hover:bg-[#0066ff] border border-white/15 text-xs font-bold text-white transition-colors"
+              >
+                <Facebook className="w-4 h-4 text-[#7fb0ff]" />
+                <span>Facebook</span>
+              </a>
+              <a
+                href={instagramUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/5 hover:bg-[#0066ff] border border-white/15 text-xs font-bold text-white transition-colors"
+              >
+                <Instagram className="w-4 h-4 text-[#7fb0ff]" />
+                <span>Instagram</span>
+              </a>
+            </div>
 
+            <div className="pt-2">
               <button
                 type="button"
                 onClick={() => {

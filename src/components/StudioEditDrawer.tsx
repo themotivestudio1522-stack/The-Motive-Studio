@@ -46,7 +46,7 @@ export const StudioEditDrawer: React.FC = () => {
   } = useStudioContent();
 
   const [activeTab, setActiveTab] = useState<
-    'branding' | 'typography' | 'hero' | 'services' | 'work' | 'ebook' | 'reviews' | 'about' | 'contact'
+    'branding' | 'typography' | 'hero' | 'services' | 'work' | 'ebook' | 'reviews' | 'about' | 'contact' | 'security'
   >('branding');
 
   const [expandedService, setExpandedService] = useState<number | null>(null);
@@ -60,6 +60,11 @@ export const StudioEditDrawer: React.FC = () => {
   const [newRating, setNewRating] = useState(5);
   const [newProject, setNewProject] = useState('3D Animation & CGI');
   const [newText, setNewText] = useState('');
+
+  const [currentPasscode, setCurrentPasscode] = useState('');
+  const [newPasscode, setNewPasscode] = useState('');
+  const [confirmPasscode, setConfirmPasscode] = useState('');
+  const [passcodeError, setPasscodeError] = useState('');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -207,6 +212,7 @@ export const StudioEditDrawer: React.FC = () => {
                 { id: 'reviews', label: 'Reviews', icon: Star },
                 { id: 'about', label: 'About', icon: Sparkles },
                 { id: 'contact', label: 'Contact Info', icon: PhoneCall },
+                { id: 'security', label: 'Password & Security', icon: Lock },
               ].map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -1255,6 +1261,188 @@ export const StudioEditDrawer: React.FC = () => {
                       className="w-full bg-white/5 border border-white/15 rounded-xl p-3 text-sm text-white resize-none"
                     />
                   </div>
+
+                  <div className="pt-4 border-t border-white/10 space-y-3">
+                    <div className="text-xs font-mono font-bold uppercase tracking-wider text-[#7fb0ff]">
+                      Social Media Links (Icons)
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-neutral-400 mb-1">
+                        LinkedIn URL
+                      </label>
+                      <input
+                        type="url"
+                        value={content.socials?.linkedin || ''}
+                        onChange={(e) =>
+                          updateField('socials', { ...content.socials, linkedin: e.target.value })
+                        }
+                        className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2 text-xs text-white font-mono"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-neutral-400 mb-1">
+                        Facebook URL
+                      </label>
+                      <input
+                        type="url"
+                        value={content.socials?.facebook || ''}
+                        onChange={(e) =>
+                          updateField('socials', { ...content.socials, facebook: e.target.value })
+                        }
+                        className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2 text-xs text-white font-mono"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-neutral-400 mb-1">
+                        Instagram URL
+                      </label>
+                      <input
+                        type="url"
+                        value={content.socials?.instagram || ''}
+                        onChange={(e) =>
+                          updateField('socials', { ...content.socials, instagram: e.target.value })
+                        }
+                        className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2 text-xs text-white font-mono"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* PASSWORD & SECURITY TAB */}
+              {activeTab === 'security' && (
+                <div className="space-y-6">
+                  <div className="p-5 rounded-2xl bg-[#0066ff]/10 border border-[#0066ff]/30 space-y-2">
+                    <div className="flex items-center gap-2 text-xs font-bold text-[#7fb0ff] uppercase tracking-wider">
+                      <ShieldCheck className="w-4 h-4 text-[#0066ff]" />
+                      <span>Admin Password Management</span>
+                    </div>
+                    <p className="text-xs text-neutral-300 leading-relaxed">
+                      Update the master passcode required to unlock the Studio CMS Editor.
+                    </p>
+                  </div>
+
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      setPasscodeError('');
+
+                      const defaultPasscodes = ['motive2026', 'themotivestudio', 'zara&eman', 'zarakhan', 'emantariq'];
+                      const savedCustom = localStorage.getItem('motive_custom_admin_passcode');
+                      const cleanCurrent = currentPasscode.trim();
+
+                      const isCurrentValid = savedCustom
+                        ? cleanCurrent === savedCustom || cleanCurrent.toLowerCase() === savedCustom.toLowerCase()
+                        : defaultPasscodes.includes(cleanCurrent.toLowerCase());
+
+                      if (!isCurrentValid) {
+                        setPasscodeError('Current password is incorrect.');
+                        return;
+                      }
+
+                      if (newPasscode.trim().length < 4) {
+                        setPasscodeError('New password must be at least 4 characters long.');
+                        return;
+                      }
+
+                      if (newPasscode.trim() !== confirmPasscode.trim()) {
+                        setPasscodeError('New password and confirmation do not match.');
+                        return;
+                      }
+
+                      localStorage.setItem('motive_custom_admin_passcode', newPasscode.trim());
+                      setCurrentPasscode('');
+                      setNewPasscode('');
+                      setConfirmPasscode('');
+                      showToast('Admin password updated successfully!');
+                    }}
+                    className="space-y-4"
+                  >
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-neutral-300 mb-1.5">
+                        Current Password *
+                      </label>
+                      <input
+                        type="password"
+                        required
+                        value={currentPasscode}
+                        onChange={(e) => {
+                          setCurrentPasscode(e.target.value);
+                          if (passcodeError) setPasscodeError('');
+                        }}
+                        placeholder="Enter current password..."
+                        className="w-full bg-white/5 border border-white/15 focus:border-[#0066ff] rounded-xl px-4 py-2.5 text-sm text-white outline-none font-mono"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-neutral-300 mb-1.5">
+                        New Password *
+                      </label>
+                      <input
+                        type="password"
+                        required
+                        value={newPasscode}
+                        onChange={(e) => {
+                          setNewPasscode(e.target.value);
+                          if (passcodeError) setPasscodeError('');
+                        }}
+                        placeholder="Enter new password..."
+                        className="w-full bg-white/5 border border-white/15 focus:border-[#0066ff] rounded-xl px-4 py-2.5 text-sm text-white outline-none font-mono"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-neutral-300 mb-1.5">
+                        Confirm New Password *
+                      </label>
+                      <input
+                        type="password"
+                        required
+                        value={confirmPasscode}
+                        onChange={(e) => {
+                          setConfirmPasscode(e.target.value);
+                          if (passcodeError) setPasscodeError('');
+                        }}
+                        placeholder="Confirm new password..."
+                        className="w-full bg-white/5 border border-white/15 focus:border-[#0066ff] rounded-xl px-4 py-2.5 text-sm text-white outline-none font-mono"
+                      />
+                    </div>
+
+                    {passcodeError && (
+                      <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs">
+                        {passcodeError}
+                      </div>
+                    )}
+
+                    <button
+                      type="submit"
+                      className="w-full py-3 rounded-xl bg-[#0066ff] hover:bg-[#0052cc] text-white text-xs font-bold transition-colors cursor-pointer shadow-lg shadow-[#0066ff]/20"
+                    >
+                      Save New Password
+                    </button>
+                  </form>
+
+                  {localStorage.getItem('motive_custom_admin_passcode') && (
+                    <div className="pt-4 border-t border-white/10 flex items-center justify-between">
+                      <span className="text-xs text-neutral-400">
+                        Custom password is currently active.
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          localStorage.removeItem('motive_custom_admin_passcode');
+                          showToast('Password reset to default founder passcodes.');
+                        }}
+                        className="text-xs font-semibold text-rose-400 hover:text-rose-300 underline cursor-pointer"
+                      >
+                        Reset to Default Password
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

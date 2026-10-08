@@ -622,7 +622,6 @@ export const REVIEWS_DATA: ReviewItem[] = [
     projectDelivered: '3D CGI Product Animation & Showreel',
     date: 'February 2026',
     reviewText: 'The Motive Studio transformed our robotic hardware into cinema-grade 3D kinetic visuals. Their 3D animation loop directly helped us close our $14.5M Series A round. Unbelievable attention to lighting, physics, and pacing.',
-    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
     verified: true
   },
   {
@@ -633,8 +632,7 @@ export const REVIEWS_DATA: ReviewItem[] = [
     rating: 5,
     projectDelivered: 'Viral Reels & Short-Form Production',
     date: 'January 2026',
-    reviewText: 'We contracted The Motive for batch Instagram Reels and TikTok video editing. Our organic reach surged 3.8x within 30 days! The hook pacing, kinetic captions, and sound design are in a league of their own.',
-    avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
+    reviewText: 'We contracted The Motive for batch Instagram Reels and TikTok video editing. Our organic reach surged 3.8x within 30 days. The hook pacing, kinetic captions, and sound design are in a league of their own.',
     verified: true
   },
   {
@@ -646,7 +644,6 @@ export const REVIEWS_DATA: ReviewItem[] = [
     projectDelivered: 'Brand Identity & Luxury Ebook Design',
     date: 'March 2026',
     reviewText: 'From our primary brand identity to the 48-page executive publication, The Motive Studio delivered immaculate craftsmanship. Our average order value rose by $185 following the brand relaunch.',
-    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
     verified: true
   },
   {
@@ -657,8 +654,7 @@ export const REVIEWS_DATA: ReviewItem[] = [
     rating: 5,
     projectDelivered: 'UI/UX Design System & 2D Motion Graphics',
     date: 'January 2026',
-    reviewText: 'Their 2D animation explainer and Figma design system eliminated months of engineering rework. The interactions feel native, sub-200ms, and utterly premium. Highly recommended.',
-    avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
+    reviewText: 'Their 2D animation explainer and Figma design system eliminated months of engineering rework. The interactions feel native, fast, and utterly premium. Highly recommended.',
     verified: true
   },
   {
@@ -669,8 +665,7 @@ export const REVIEWS_DATA: ReviewItem[] = [
     rating: 5,
     projectDelivered: 'Commercial Video Editing & Web Experience',
     date: 'December 2025',
-    reviewText: 'Fast turnaround, zero corporate fluff, and direct collaboration with their lead creative director. Our architectural commercial cuts received multiple industry accolades. 10/10 execution.',
-    avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
+    reviewText: 'Fast turnaround, zero corporate fluff, and direct collaboration with their lead creative director. Our architectural commercial cuts received multiple industry accolades.',
     verified: true
   }
 ];

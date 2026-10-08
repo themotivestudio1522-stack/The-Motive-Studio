@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useStudioContent } from '../context/StudioContentContext';
-import { Star, CheckCircle2, MessageSquare, Plus, Quote, Sparkles } from 'lucide-react';
-import { ReviewItem } from '../data/studioData';
+import { Star, CheckCircle2, Plus, Sparkles } from 'lucide-react';
 import { ScrollReveal } from './ScrollReveal';
 
 interface ReviewsSectionProps {

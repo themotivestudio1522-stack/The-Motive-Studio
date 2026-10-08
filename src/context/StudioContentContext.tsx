@@ -61,6 +61,7 @@ export interface StudioContent {
   socials: {
     instagram: string;
     linkedin: string;
+    facebook: string;
     twitter: string;
     fiverr: string;
     upwork: string;
@@ -82,7 +83,8 @@ const DEFAULT_CONTENT: StudioContent = {
   },
   socials: {
     instagram: 'https://www.instagram.com/themotivestudio1522/',
-    linkedin: 'https://lnkd.in/p/dTYBV-Z8',
+    linkedin: 'https://www.linkedin.com/public-profile/settings/?trk=d_flagship3_profile_self_view_public_profile&lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base%3B6nDsZNWyQherCT0HW%2B%2FclA%3D%3D',
+    facebook: 'https://www.facebook.com/profile.php?id=61594971998869',
     twitter: 'https://twitter.com',
     fiverr: 'https://fiverr.com',
     upwork: 'https://upwork.com',
@@ -146,7 +148,7 @@ interface StudioContextType {
 
 const StudioContentContext = createContext<StudioContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = 'the_motive_studio_content_v8';
+const LOCAL_STORAGE_KEY = 'the_motive_studio_content_v9';
 
 export const StudioContentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [content, setContent] = useState<StudioContent>(() => {
@@ -163,6 +165,10 @@ export const StudioContentProvider: React.FC<{ children: React.ReactNode }> = ({
             ...parsed.branding,
             customLogoUrl:
               savedLogo && savedLogo !== '/official_logo.jpg' ? savedLogo : '',
+          },
+          socials: {
+            ...DEFAULT_CONTENT.socials,
+            ...parsed.socials,
           },
           services: parsed.services?.length ? parsed.services : DEFAULT_CONTENT.services,
           reviews: parsed.reviews?.length ? parsed.reviews : DEFAULT_CONTENT.reviews,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Phone, MapPin, Send, CheckCircle2, Copy, Check, ArrowUpRight } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, CheckCircle2, Copy, Check, ArrowUpRight, Instagram, Linkedin, Facebook } from 'lucide-react';
 import { useStudioContent } from '../context/StudioContentContext';
 import { ScrollReveal } from './ScrollReveal';
 
@@ -191,32 +191,45 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                 <span>Direct Founder Access: All briefs are reviewed personally by <strong>Eman Tariq (CEO)</strong> &amp; <strong>Zara Amin Khan (Co-Founder)</strong>.</span>
               </div>
 
-              {/* Direct Social Channels */}
-              <div className="pt-2 flex items-center gap-3">
+              {/* Direct Social Channels with Icons */}
+              <div className="pt-2 grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                 <a
                   href={content.socials?.instagram || 'https://www.instagram.com/themotivestudio1522/'}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex-1 inline-flex items-center justify-between p-3.5 rounded-2xl bg-white/5 border border-white/10 hover:border-[#0066ff] hover:bg-white/10 text-xs font-bold text-white transition-all cursor-pointer group"
+                  className="inline-flex items-center justify-between p-3.5 rounded-2xl bg-white/5 border border-white/10 hover:border-[#0066ff] hover:bg-white/10 text-xs font-bold text-white transition-all cursor-pointer group"
                 >
                   <span className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#0066ff]" />
+                    <Instagram className="w-4 h-4 text-[#7fb0ff]" />
                     <span>Instagram</span>
                   </span>
-                  <ArrowUpRight className="w-4 h-4 text-[#7fb0ff] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  <ArrowUpRight className="w-3.5 h-3.5 text-[#7fb0ff] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </a>
 
                 <a
-                  href={content.socials?.linkedin || 'https://lnkd.in/p/dTYBV-Z8'}
+                  href={content.socials?.linkedin || 'https://www.linkedin.com/public-profile/settings/?trk=d_flagship3_profile_self_view_public_profile&lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base%3B6nDsZNWyQherCT0HW%2B%2FclA%3D%3D'}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex-1 inline-flex items-center justify-between p-3.5 rounded-2xl bg-white/5 border border-white/10 hover:border-[#0066ff] hover:bg-white/10 text-xs font-bold text-white transition-all cursor-pointer group"
+                  className="inline-flex items-center justify-between p-3.5 rounded-2xl bg-white/5 border border-white/10 hover:border-[#0066ff] hover:bg-white/10 text-xs font-bold text-white transition-all cursor-pointer group"
                 >
                   <span className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#0066ff]" />
+                    <Linkedin className="w-4 h-4 text-[#7fb0ff]" />
                     <span>LinkedIn</span>
                   </span>
-                  <ArrowUpRight className="w-4 h-4 text-[#7fb0ff] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  <ArrowUpRight className="w-3.5 h-3.5 text-[#7fb0ff] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </a>
+
+                <a
+                  href={content.socials?.facebook || 'https://www.facebook.com/profile.php?id=61594971998869'}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-between p-3.5 rounded-2xl bg-white/5 border border-white/10 hover:border-[#0066ff] hover:bg-white/10 text-xs font-bold text-white transition-all cursor-pointer group"
+                >
+                  <span className="flex items-center gap-2">
+                    <Facebook className="w-4 h-4 text-[#7fb0ff]" />
+                    <span>Facebook</span>
+                  </span>
+                  <ArrowUpRight className="w-3.5 h-3.5 text-[#7fb0ff] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </a>
               </div>
             </div>

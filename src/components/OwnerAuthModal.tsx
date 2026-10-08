@@ -28,7 +28,7 @@ export const OwnerAuthModal: React.FC<OwnerAuthModalProps> = ({
 
   if (!isOpen) return null;
 
-  const validPasscodes = ['motive2026', 'themotivestudio', 'zara&eman', 'zarakhan', 'emantariq'];
+  const defaultPasscodes = ['motive2026', 'themotivestudio', 'zara&eman', 'zarakhan', 'emantariq'];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,9 +37,14 @@ export const OwnerAuthModal: React.FC<OwnerAuthModalProps> = ({
 
     setTimeout(() => {
       setIsVerifying(false);
-      const cleanInput = passcode.trim().toLowerCase();
+      const cleanInput = passcode.trim();
+      const customPasscode = localStorage.getItem('motive_custom_admin_passcode');
 
-      if (validPasscodes.includes(cleanInput)) {
+      const isAuthenticated = customPasscode
+        ? cleanInput === customPasscode || cleanInput.toLowerCase() === customPasscode.toLowerCase()
+        : defaultPasscodes.includes(cleanInput.toLowerCase());
+
+      if (isAuthenticated) {
         sessionStorage.setItem('motive_owner_authenticated', 'true');
         showToast('Access Granted · Studio CMS Unlocked for Leadership');
         onSuccess();
