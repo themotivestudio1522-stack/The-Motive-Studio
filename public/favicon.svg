@@ -1,63 +1,31 @@
-
-<svg viewBox="0 0 360 250" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-full w-auto">
-  <!-- Monogram M: Left Mountain -->
-  <!-- Left outer ascending stroke -->
+<svg viewBox="0 0 420 265" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- OUTER LEFT & CENTER RIBBON OF 'M' -->
   <path
-    d="M 35 215 L 115 45 L 152 45 L 72 215 Z"
-    fill="#FFFFFF"
-  />
-  <!-- Left inner descending stroke to center trough -->
-  <path
-    d="M 115 45 L 175 168 L 195 128 L 148 45 Z"
-    fill="#FFFFFF"
-  />
-  <!-- Bottom center trough vertex -->
-  <path
-    d="M 175 168 L 160 200 L 132 142 L 152 110 Z"
-    fill="#FFFFFF"
-  />
-  <!-- Center ascending stroke along arrow -->
-  <path
-    d="M 175 168 L 208 102 L 224 118 L 192 198 L 160 200 Z"
-    fill="#FFFFFF"
+    d="M 18 242 L 154 28 L 208 112 L 278 4 L 298 34 L 218 158 L 154 60 L 62 206 L 90 206 L 154 106 L 208 190 L 244 134 L 268 152 L 208 245 L 154 162 L 103 242 Z"
+    fill="#14171D"
   />
 
-  <!-- The Upward Launch Growth Arrow -->
-  <!-- Arrow shaft and swept-wing arrowhead -->
+  <!-- RIGHT LOWER LEG OF 'M' -->
   <path
-    d="M 198 122 L 222 138 L 232 116 L 210 100 Z"
-    fill="#0066FF"
-    stroke="#0066FF"
-    stroke-width="1.5"
+    d="M 326 122 L 402 242 L 298 242 L 272 200 L 294 166 L 324 214 L 352 214 L 310 148 Z"
+    fill="#14171D"
   />
+
+  <!-- SIGNATURE TOP-RIGHT ELECTRIC BLUE WING FACET -->
   <path
-    d="M 218 95 L 254 32 L 194 72 L 214 84 L 202 108 L 216 116 L 226 94 Z"
-    fill="#0066FF"
-    stroke="#0066FF"
+    d="M 278 4 L 368 4 L 264 166 L 274 96 L 296 64 L 316 34 L 298 34 Z"
+    fill="#0A68DF"
+    stroke="#14171D"
     stroke-width="1.5"
     stroke-linejoin="round"
   />
 
-  <!-- Top-Right Electric Blue Peak (The Motive signature) -->
-  <!-- Primary face: #0066FF -->
+  <!-- LOWER RIGHT BLUE DIAGONAL BAR -->
   <path
-    d="M 248 32 L 298 32 L 264 100 L 238 100 Z"
-    fill="#0066FF"
-  />
-  <!-- 3D Isometric Bevel: #004BB5 -->
-  <path
-    d="M 264 100 L 288 148 L 268 148 L 248 108 Z"
-    fill="#004BB5"
-  />
-
-  <!-- Monogram M: Right Leg -->
-  <path
-    d="M 248 108 L 268 148 L 308 215 L 272 215 L 236 142 Z"
-    fill="#FFFFFF"
-  />
-  <!-- Right foot join -->
-  <path
-    d="M 246 195 L 308 215 L 272 215 L 230 195 Z"
-    fill="#FFFFFF"
+    d="M 320 96 L 348 140 L 348 214 L 302 142 Z"
+    fill="#0A68DF"
+    stroke="#14171D"
+    stroke-width="1.5"
+    stroke-linejoin="round"
   />
 </svg>

@@ -20,79 +20,46 @@ export const MotiveLogoMark: React.FC<{
   className?: string;
 }> = ({ theme = 'dark', className = 'h-full w-auto' }) => {
   const isLight = theme === 'light';
-  const bodyColor = isLight ? '#15181E' : '#FFFFFF';
-  const bluePrimary = '#0066FF';
-  const blueShadow = '#004BB5';
-  const arrowFill = isLight ? '#FFFFFF' : '#0066FF';
-  const arrowStroke = isLight ? '#15181E' : '#FFFFFF';
+  const bodyColor = isLight ? '#14171D' : '#FFFFFF';
+  const blueColor = '#0A68DF';
+  const blueOutline = isLight ? '#14171D' : '#06479E';
 
   return (
     <svg
-      viewBox="0 0 360 250"
+      viewBox="0 0 420 265"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={`${className} select-none drop-shadow-sm`}
+      className={`${className} select-none`}
     >
-      {/* MONOGRAM 'M': LEFT ASCENDING MOUNTAIN */}
-      {/* Outer ascending left leg */}
+      {/* OUTER LEFT & CENTER RIBBON OF 'M' (Ascending to left peak, down to V-valley, up to top-right peak) */}
       <path
-        d="M 36 215 L 115 45 L 152 45 L 73 215 Z"
-        fill={bodyColor}
-      />
-      {/* Inner descending stroke to center trough */}
-      <path
-        d="M 115 45 L 175 168 L 195 128 L 148 45 Z"
-        fill={bodyColor}
-      />
-      {/* Bottom center trough apex */}
-      <path
-        d="M 175 168 L 160 200 L 132 142 L 152 110 Z"
-        fill={bodyColor}
-      />
-      {/* Center rising stroke bordering the arrow */}
-      <path
-        d="M 175 168 L 208 102 L 224 118 L 192 198 L 160 200 Z"
+        d="M 18 242 L 154 28 L 208 112 L 278 4 L 298 34 L 218 158 L 154 60 L 62 206 L 90 206 L 154 106 L 208 190 L 244 134 L 268 152 L 208 245 L 154 162 L 103 242 Z"
         fill={bodyColor}
       />
 
-      {/* THE UPWARD LAUNCH ARROW (MOTIVE'S GROWTH EMBLEM) */}
-      {/* Arrow Shaft */}
+      {/* RIGHT LOWER BLACK TRIANGLE LEG OF 'M' (With inner white chevron cutout) */}
       <path
-        d="M 198 122 L 222 138 L 232 116 L 210 100 Z"
-        fill={arrowFill}
-        stroke={arrowStroke}
-        strokeWidth="1.5"
+        d="M 326 122 L 402 242 L 298 242 L 272 200 L 294 166 L 324 214 L 352 214 L 310 148 Z"
+        fill={bodyColor}
       />
-      {/* Arrowhead with dynamic swept barbs pointing toward top-right */}
+
+      {/* SIGNATURE TOP-RIGHT ELECTRIC BLUE '7' / WING FACET */}
+      {/* Upper blue wing from top horizontal bar sweeping down-left */}
       <path
-        d="M 218 95 L 254 32 L 194 72 L 214 84 L 202 108 L 216 116 L 226 94 Z"
-        fill={arrowFill}
-        stroke={arrowStroke}
+        d="M 278 4 L 368 4 L 264 166 L 274 96 L 296 64 L 316 34 L 298 34 Z"
+        fill={blueColor}
+        stroke={blueOutline}
         strokeWidth="1.5"
         strokeLinejoin="round"
       />
 
-      {/* SIGNATURE TOP-RIGHT ELECTRIC BLUE 3D FACET */}
-      {/* Primary Top Face: Vibrant Electric Blue */}
+      {/* Lower right blue diagonal bar descending into the right leg */}
       <path
-        d="M 248 32 L 298 32 L 264 100 L 238 100 Z"
-        fill={bluePrimary}
-      />
-      {/* 3D Isometric Depth Facet: Royal Blue Shadow */}
-      <path
-        d="M 264 100 L 288 148 L 268 148 L 248 108 Z"
-        fill={blueShadow}
-      />
-
-      {/* MONOGRAM 'M': RIGHT DESCENDING LEG */}
-      <path
-        d="M 248 108 L 268 148 L 308 215 L 272 215 L 236 142 Z"
-        fill={bodyColor}
-      />
-      {/* Right base foot */}
-      <path
-        d="M 246 195 L 308 215 L 272 215 L 230 195 Z"
-        fill={bodyColor}
+        d="M 320 96 L 348 140 L 348 214 L 302 142 Z"
+        fill={blueColor}
+        stroke={blueOutline}
+        strokeWidth="1.5"
+        strokeLinejoin="round"
       />
     </svg>
   );
