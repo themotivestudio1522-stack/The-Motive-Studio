@@ -56,6 +56,8 @@ const majorSectionVariants: Variants = {
   },
 };
 
+import { ShieldCheck } from 'lucide-react';
+
 function StudioApp() {
   const { content, setIsDrawerOpen } = useStudioContent();
 
@@ -69,6 +71,15 @@ function StudioApp() {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState<boolean>(false);
   const [isOwnerAuthOpen, setIsOwnerAuthOpen] = useState<boolean>(false);
 
+  const isOwnerAuthenticated = () => {
+    return (
+      sessionStorage.getItem('motive_owner_authenticated') === 'true' ||
+      localStorage.getItem('motive_owner_authenticated') === 'true'
+    );
+  };
+
+  const [isOwnerAuthed, setIsOwnerAuthed] = useState<boolean>(isOwnerAuthenticated);
+
   const [contactInitialService, setContactInitialService] = useState<string>('');
   const [contactInitialMessage, setContactInitialMessage] = useState<string>('');
 
@@ -76,7 +87,8 @@ function StudioApp() {
   const [scrollProgress, setScrollProgress] = useState<number>(0);
 
   const handleRequestAdminAccess = () => {
-    if (sessionStorage.getItem('motive_owner_authenticated') === 'true') {
+    if (isOwnerAuthenticated()) {
+      setIsOwnerAuthed(true);
       setIsDrawerOpen(true);
     } else {
       setIsOwnerAuthOpen(true);
@@ -88,7 +100,8 @@ function StudioApp() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'E' || e.key === 'e')) {
         e.preventDefault();
-        if (sessionStorage.getItem('motive_owner_authenticated') === 'true') {
+        if (isOwnerAuthenticated()) {
+          setIsOwnerAuthed(true);
           setIsDrawerOpen(true);
         } else {
           setIsOwnerAuthOpen(true);
@@ -97,31 +110,49 @@ function StudioApp() {
     };
     window.addEventListener('keydown', handleKeyDown);
 
-    // Support URL path (/admin or /edit), hash (#admin or #edit), or query (?admin=1) for direct owner login prompt
+    // Support URL path (/admin or /edit), hash (#admin or #edit), or query (?admin=1)
     const checkUrlForAdmin = () => {
       const hash = window.location.hash.toLowerCase();
       const search = window.location.search.toLowerCase();
       const pathname = window.location.pathname.toLowerCase();
-      if (
+      const normalizedPath = pathname.replace(/\/+$/, '');
+
+      const isAdminRoute =
         hash === '#admin' ||
         hash === '#edit' ||
         search.includes('admin') ||
-        pathname.endsWith('/admin') ||
-        pathname.endsWith('/edit')
-      ) {
-        if (sessionStorage.getItem('motive_owner_authenticated') === 'true') {
+        search.includes('edit') ||
+        normalizedPath === '/admin' ||
+        normalizedPath === '/edit' ||
+        normalizedPath.endsWith('/admin') ||
+        normalizedPath.endsWith('/edit') ||
+        normalizedPath.includes('/admin') ||
+        normalizedPath.includes('/edit');
+
+      if (isAdminRoute) {
+        if (isOwnerAuthenticated()) {
+          setIsOwnerAuthed(true);
           setIsDrawerOpen(true);
         } else {
           setIsOwnerAuthOpen(true);
         }
       }
     };
+
     checkUrlForAdmin();
     window.addEventListener('hashchange', checkUrlForAdmin);
+    window.addEventListener('popstate', checkUrlForAdmin);
+
+    const handleStorage = () => {
+      setIsOwnerAuthed(isOwnerAuthenticated());
+    };
+    window.addEventListener('storage', handleStorage);
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('hashchange', checkUrlForAdmin);
+      window.removeEventListener('popstate', checkUrlForAdmin);
+      window.removeEventListener('storage', handleStorage);
     };
   }, [setIsDrawerOpen]);
 
@@ -323,7 +354,26 @@ function StudioApp() {
       <Footer />
 
       {/* Official Studio Client Desk (Floating Bottom-Left) */}
-      <StudioChatbot onStartProject={scrollToContact} />
+      <StudioChatbot
+        onStartProject={scrollToContact}
+        onOpenEbookModal={() => setIsEbookModalOpen(true)}
+      />
+
+      {/* Floating Founder CMS Quick Access Pill (Visible ONLY to authenticated leadership) */}
+      {isOwnerAuthed && (
+        <div className="fixed bottom-6 right-6 z-40 animate-in fade-in slide-in-from-bottom-3 duration-300">
+          <button
+            type="button"
+            onClick={() => setIsDrawerOpen(true)}
+            className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-[#181c24]/95 text-white border border-emerald-500/40 shadow-2xl backdrop-blur-md hover:bg-[#202532] hover:border-emerald-400 transition-all cursor-pointer group"
+          >
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <span className="text-xs font-bold font-mono text-emerald-300">CMS UNLOCKED</span>
+            <span className="text-xs text-neutral-300">· Edit Website</span>
+          </button>
+        </div>
+      )}
 
       {/* Full Live Studio Content Management Drawer (Restricted Founder Access) */}
       <StudioEditDrawer />
@@ -332,7 +382,11 @@ function StudioApp() {
       <OwnerAuthModal
         isOpen={isOwnerAuthOpen}
         onClose={() => setIsOwnerAuthOpen(false)}
-        onSuccess={() => setIsDrawerOpen(true)}
+        onSuccess={() => {
+          setIsOwnerAuthed(true);
+          setIsOwnerAuthOpen(false);
+          setIsDrawerOpen(true);
+        }}
       />
 
       {/* Overlays / Modals */}

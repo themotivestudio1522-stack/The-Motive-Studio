@@ -22,6 +22,7 @@ export interface StudioContent {
     useOfficialVectorLogo: boolean;
     fontFamily: 'Montserrat' | 'Plus Jakarta Sans' | 'Inter' | 'Outfit';
     accentColor: string;
+    logoStyle?: 'signature' | 'minimal' | 'crest';
   };
   hero: {
     eyebrow: string;
@@ -76,10 +77,11 @@ const DEFAULT_CONTENT: StudioContent = {
   branding: {
     studioName: 'THE MOTIVE STUDIO',
     studioTagline: 'WE CREATE. YOU GROW.',
-    customLogoUrl: '',
-    useOfficialVectorLogo: true,
+    customLogoUrl: '/logo_dark_theme.png',
+    useOfficialVectorLogo: false,
     fontFamily: 'Montserrat',
     accentColor: '#0066ff',
+    logoStyle: 'signature',
   },
   socials: {
     instagram: 'https://www.instagram.com/themotivestudio1522/',
@@ -130,6 +132,62 @@ const DEFAULT_CONTENT: StudioContent = {
   reviews: REVIEWS_DATA,
 };
 
+export function mergeStudioContent(
+  base: StudioContent,
+  incoming: Partial<StudioContent> | null | undefined
+): StudioContent {
+  if (!incoming || typeof incoming !== 'object') return base;
+  return {
+    ...base,
+    ...incoming,
+    branding: {
+      ...base.branding,
+      ...(incoming.branding || {}),
+      logoStyle: incoming.branding?.logoStyle || base.branding.logoStyle || 'signature',
+    },
+    hero: {
+      ...base.hero,
+      ...(incoming.hero || {}),
+    },
+    statement: {
+      ...base.statement,
+      ...(incoming.statement || {}),
+    },
+    about: {
+      ...base.about,
+      ...(incoming.about || {}),
+    },
+    contact: {
+      ...base.contact,
+      ...(incoming.contact || {}),
+    },
+    socials: {
+      ...base.socials,
+      ...(incoming.socials || {}),
+    },
+    services:
+      Array.isArray(incoming.services) && incoming.services.length > 0
+        ? incoming.services
+        : base.services,
+    projects:
+      Array.isArray(incoming.projects) && incoming.projects.length > 0
+        ? incoming.projects
+        : base.projects,
+    ebook: {
+      ...base.ebook,
+      ...(incoming.ebook || {}),
+      chapters:
+        Array.isArray(incoming.ebook?.chapters) && incoming.ebook.chapters.length > 0
+          ? incoming.ebook.chapters
+          : base.ebook.chapters,
+    },
+    reviews:
+      Array.isArray(incoming.reviews) && incoming.reviews.length > 0
+        ? incoming.reviews
+        : base.reviews,
+  };
+}
+
 interface StudioContextType {
   content: StudioContent;
   updateContent: (newContent: Partial<StudioContent>) => void;
@@ -138,6 +196,8 @@ interface StudioContextType {
   updateReview: (id: string, updated: Partial<ReviewItem>) => void;
   deleteReview: (id: string) => void;
   resetToDefaults: () => void;
+  saveToServer: () => Promise<boolean>;
+  isSaving: boolean;
   isEditMode: boolean;
   setIsEditMode: (val: boolean) => void;
   isDrawerOpen: boolean;
@@ -148,34 +208,26 @@ interface StudioContextType {
 
 const StudioContentContext = createContext<StudioContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = 'the_motive_studio_content_v9';
+const LOCAL_STORAGE_KEY = 'the_motive_studio_content_v11';
 
 export const StudioContentProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [content, setContent] = useState<StudioContent>(() => {
     try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+      const saved =
+        localStorage.getItem(LOCAL_STORAGE_KEY) ||
+        localStorage.getItem('the_motive_studio_content_v10') ||
+        localStorage.getItem('the_motive_studio_content_v9');
       if (saved) {
         const parsed = JSON.parse(saved);
-        const savedLogo = parsed.branding?.customLogoUrl;
-        return {
-          ...DEFAULT_CONTENT,
-          ...parsed,
-          branding: {
-            ...DEFAULT_CONTENT.branding,
-            ...parsed.branding,
-            customLogoUrl:
-              savedLogo && savedLogo !== '/official_logo.jpg' ? savedLogo : '',
-          },
-          socials: {
-            ...DEFAULT_CONTENT.socials,
-            ...parsed.socials,
-          },
-          services: parsed.services?.length ? parsed.services : DEFAULT_CONTENT.services,
-          reviews: parsed.reviews?.length ? parsed.reviews : DEFAULT_CONTENT.reviews,
-        };
+        const merged = mergeStudioContent(DEFAULT_CONTENT, parsed);
+        if (!merged.branding.customLogoUrl || merged.branding.customLogoUrl === '/official_logo.jpg') {
+          merged.branding.customLogoUrl = '/logo_dark_theme.png';
+          merged.branding.useOfficialVectorLogo = false;
+        }
+        return merged;
       }
     } catch (e) {
-      console.error('Error loading saved content:', e);
+      console.error('Error loading saved content from localStorage:', e);
     }
     return DEFAULT_CONTENT;
   });
@@ -183,25 +235,125 @@ export const StudioContentProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => {
       setToastMessage(null);
-    }, 3000);
+    }, 3200);
   };
+
+  // Safely persist to browser localStorage with quota management
+  const safeSaveLocal = (data: StudioContent) => {
+    try {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
+      window.dispatchEvent(new CustomEvent('studio-content-synced', { detail: data }));
+    } catch (e: any) {
+      console.warn('LocalStorage write warning (likely quota):', e);
+      // If quota exceeded due to large data URL, try stripping the custom logo URL for local backup
+      try {
+        const fallback = {
+          ...data,
+          branding: { ...data.branding, customLogoUrl: '' },
+        };
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(fallback));
+      } catch (err) {}
+    }
+  };
+
+  // Persist to server / API if running in fullstack or serverless
+  const persistToServer = async (data: StudioContent): Promise<boolean> => {
+    setIsSaving(true);
+    try {
+      const res = await fetch('/api/content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      setIsSaving(false);
+      return res.ok;
+    } catch (e) {
+      setIsSaving(false);
+      return false;
+    }
+  };
+
+  const saveToServer = async (): Promise<boolean> => {
+    safeSaveLocal(content);
+    const serverOk = await persistToServer(content);
+    if (serverOk) {
+      showToast('Published & Persisted Live to Website & Server!');
+    } else {
+      showToast('Saved to browser storage! (Export JSON to commit to repo)');
+    }
+    return serverOk;
+  };
+
+  // Fetch initial published content from /api/content or /content.json on mount
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchInitialData = async () => {
+      try {
+        let res = await fetch('/api/content').catch(() => null);
+        if (!res || !res.ok) {
+          res = await fetch('/content.json').catch(() => null);
+        }
+
+        if (res && res.ok) {
+          const remoteJson = await res.json();
+          if (isMounted && remoteJson && typeof remoteJson === 'object') {
+            setContent((prev) => {
+              // Merge remote with current local changes
+              const merged = mergeStudioContent(prev, remoteJson);
+              safeSaveLocal(merged);
+              return merged;
+            });
+          }
+        }
+      } catch (err) {
+        // Fallback silently to client store
+      }
+    };
+
+    fetchInitialData();
+
+    // Cross-tab synchronization
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === LOCAL_STORAGE_KEY && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          setContent((prev) => mergeStudioContent(prev, parsed));
+        } catch (err) {}
+      }
+    };
+
+    const handleCustomSync = (e: Event) => {
+      const customEvt = e as CustomEvent<StudioContent>;
+      if (customEvt.detail) {
+        setContent(customEvt.detail);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('studio-content-synced', handleCustomSync);
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('studio-content-synced', handleCustomSync);
+    };
+  }, []);
 
   const updateContent = (newContent: Partial<StudioContent>) => {
     setContent((prev) => {
-      const updated = { ...prev, ...newContent };
-      try {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
-      } catch (e) {
-        console.error('Failed to save to localStorage:', e);
-      }
+      const updated = mergeStudioContent(prev, newContent);
+      safeSaveLocal(updated);
+      persistToServer(updated);
       return updated;
     });
-    showToast('Changes saved successfully!');
+    showToast('Changes saved and updated!');
   };
 
   const updateField = <K extends keyof StudioContent>(
@@ -213,19 +365,15 @@ export const StudioContentProvider: React.FC<{ children: React.ReactNode }> = ({
         ? (field as unknown as StudioContent[K])
         : { ...(prev[section] as object), ...(field as object) };
 
-      const updated = {
+      const updated: StudioContent = {
         ...prev,
         [section]: updatedSection,
       };
 
-      try {
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
-      } catch (e) {
-        console.error('Failed to save to localStorage:', e);
-      }
+      safeSaveLocal(updated);
+      persistToServer(updated);
       return updated;
     });
-    showToast('Updated and saved!');
   };
 
   const addReview = (reviewData: Omit<ReviewItem, 'id' | 'date'>) => {
@@ -301,6 +449,8 @@ export const StudioContentProvider: React.FC<{ children: React.ReactNode }> = ({
         updateReview,
         deleteReview,
         resetToDefaults,
+        saveToServer,
+        isSaving,
         isEditMode,
         setIsEditMode,
         isDrawerOpen,

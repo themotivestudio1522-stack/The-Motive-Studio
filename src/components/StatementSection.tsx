@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { Target, Zap, ShieldCheck } from 'lucide-react';
 import { ScrollReveal } from './ScrollReveal';
+import { useStudioContent } from '../context/StudioContentContext';
 
 export const StatementSection: React.FC = () => {
+  const { content } = useStudioContent();
+  const statement = content.statement || { titleLine1: 'Ideas are easy.', titleLine2: 'Execution wins.' };
+  const accentColor = content.branding.accentColor || '#0066ff';
+
   const principles = [
     {
       title: 'Execution Over Talk',
@@ -39,8 +44,13 @@ export const StatementSection: React.FC = () => {
 
         <ScrollReveal variant="fade-up" delay={100} duration={800}>
           <h2 className="font-display text-5xl sm:text-7xl lg:text-[100px] font-black tracking-[-0.05em] leading-[0.94] mb-12">
-            Ideas are easy.<br />
-            <span className="text-[#0066ff]">Execution wins.</span>
+            {statement.titleLine1 || 'Ideas are easy.'}<br />
+            <span
+              className="text-[#0066ff]"
+              style={{ color: accentColor }}
+            >
+              {statement.titleLine2 || 'Execution wins.'}
+            </span>
           </h2>
         </ScrollReveal>
 

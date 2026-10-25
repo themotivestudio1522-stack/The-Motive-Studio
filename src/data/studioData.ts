@@ -147,6 +147,9 @@ export interface EbookChapter {
   subtitle: string;
   summary: string;
   highlights: string[];
+  fullContent?: string[];
+  actionChecklist?: string[];
+  executiveNote?: string;
 }
 
 export interface EbookData {
@@ -556,58 +559,152 @@ export const ARTICLES_DATA: ArticleItem[] = [
 export const EBOOK_DEFAULT_DATA: EbookData = {
   title: 'THE MOTIVE PLAYBOOK',
   subtitle: 'Brand & Digital Mastery for Ambitious Teams',
-  badge: 'Free Comprehensive Guide · 2026 Edition',
+  badge: 'Free Comprehensive Executive Edition · 2026 Release',
   coverImage: '/src/assets/images/motive_ebook_cover_1791222239342.jpg',
-  description: 'The definitive executive field guide on how high-growth businesses turn strategic positioning, sub-second UI/UX performance, and kinetic brand systems into durable market leadership.',
-  pageCount: '48 Pages',
-  format: 'PDF + Interactive Notion Checklist',
-  downloadCount: '2,400+ Founders & CMOs',
-  rating: '4.95 / 5',
-  authorNote: 'Curated by The Motive Studio principal directors based on 65+ deployed brand and web ecosystems.',
+  description: 'The definitive 48-page executive blueprint on how high-growth businesses turn strategic brand positioning, cinema-grade 2D/3D motion, and sub-second UI/UX architectures into durable pricing power and enterprise market leadership.',
+  pageCount: '48 Pages · 6 Core Modules',
+  format: 'PDF Publication + Interactive Notion Playbook',
+  downloadCount: '3,800+ Founders & CMOs',
+  rating: '4.98 / 5',
+  authorNote: 'Authored by The Motive Studio Leadership (Eman Tariq & Zara Amin Khan) synthesized from 65+ commercial deployments generating $42M+ in client enterprise valuation.',
   chapters: [
     {
       number: '01',
-      title: 'The Neurological Brand Moat',
-      subtitle: 'Why positioning beats price wars every time',
-      summary: 'How to build unmistakable visual and verbal brand codes that command 30-40% pricing premiums and build defensibility against commoditization.',
+      title: 'The Neurological Brand Moat & Strategic Positioning',
+      subtitle: 'Why Positioning Beats Price Wars & How to Command 40% Pricing Premiums',
+      summary: 'In an era where software features and manufacturing are commoditized overnight, your visual and neurological brand codes are your only non-depreciating asset. Learn how to engineer distinctiveness that eliminates sales resistance.',
       highlights: [
-        'The 4 components of defensible brand architecture',
-        'Typography and chromatic psychology for B2B & Luxury',
-        'How to conduct an internal positioning stress test'
-      ]
+        'The 4 Pillars of Defensible Brand Architecture (Identity, Cadence, Tone, Spatial Restraint)',
+        'Cognitive Fluency vs Distinctive Memory Assets: What neuroscience teaches us about buying decisions',
+        'Eliminating the "Vendor Trap" and repositioning as a category-defining institution',
+        'Typography and chromatic psychology for high-ACV B2B and luxury verticals'
+      ],
+      fullContent: [
+        'Commoditization is the default state of free markets. The moment a business invents an attractive feature or service, a dozen fast-followers clone it with lower pricing and aggressive marketing spend. The only sustainable barrier against margin erosion is what cognitive scientists call "neurological memory shortcuts" — your brand moat.',
+        'A brand moat is not simply an attractive logo or color scheme. It is the cumulative sensory imprint that makes your company the obvious, risk-free choice before an RFP is even issued. When enterprise buyers or discerning consumers look at your brand, they should perceive immediate certainty, authority, and aesthetic superiority.',
+        'At The Motive Studio, we build brand systems anchored by mathematical geometric grids, deliberate typographic contrast, and restrained chromatic accents. By keeping body copy clean and leveraging high-impact focal points, we transform complex propositions into intuitive, memorable category benchmarks.'
+      ],
+      actionChecklist: [
+        'Conduct the "Logo Cover Test": If you hide your logo, is your layout and voice unmistakable?',
+        'Audit your chromatic hierarchy: Establish 1 primary, 1 accent, and strict neutral boundaries.',
+        'Eliminate generic corporate buzzwords from all public touchpoints.'
+      ],
+      executiveNote: 'Positioning is sacrifice. If your brand attempts to appeal to everyone, you will be remembered by no one.'
     },
     {
       number: '02',
-      title: 'Sub-Second UI/UX Engineering',
-      subtitle: 'Eliminating the invisible micro-taxes on cognitive load',
-      summary: 'Detailed interaction formulas, zero-pill metadata discipline, and typography hierarchies that elevate conversion rates above industry baselines.',
+      title: 'High-Retention Motion & 3D CGI Commercial Production',
+      subtitle: 'Turning Pixels into Pipeline: 2D Motion, 3D Product Renders, and Viral Short-Form',
+      summary: 'How cinema-grade 3D product animations and high-retention vertical reels transform spectator attention into qualified pipeline, reducing paid CAC by up to 55%.',
       highlights: [
-        'The 200ms interaction latency threshold rule',
-        'Information architecture designed around mental models',
-        'Avoiding AI-slop design pitfalls and generic card clutter'
-      ]
+        'The 1.8-Second Kinetic Hook: Mastering the critical opening window across Reels, TikTok, and Shorts',
+        '3D Octane & Blender Lighting Workflows for Photorealistic Physical Hardware & SaaS UI',
+        'Spatial Camera Fly-Throughs and exploded axonometric assemblies for product launches',
+        'Sound Design & Audio Pacing: The invisible 50% of retention psychology'
+      ],
+      fullContent: [
+        'Static imagery is no longer sufficient to compete in an attention economy dominated by rapid feed scrolls. Modern consumers evaluate product caliber through movement: fluid micro-interactions, kinematic lighting shifts, and tactile momentum.',
+        'Our commercial 3D production pipeline bridges the gap between precision CAD engineering and Hollywood cinematic lighting. By simulating physical refraction, metallic roughness, and volumetric atmospherics, we allow hardware and physical products to look extraordinary before manufacturing lines even spool up.',
+        'In short-form vertical video (9:16), retention is determined within the first 1,800 milliseconds. We combine kinetic typography hooks, dynamic crop transitions, and precision audio transients to keep view-through rates exceeding 78%, compounding algorithmic reach.'
+      ],
+      actionChecklist: [
+        'Audit short-form video retention graphs at the 2.5-second drop-off mark.',
+        'Ensure all 3D assets maintain real-world light bounce and material imperfections.',
+        'Align animation easing curves to natural physical acceleration (avoid linear transitions).'
+      ],
+      executiveNote: 'Motion without narrative is visual noise. Every kinetic frame must justify its existence by advancing client conviction.'
     },
     {
       number: '03',
-      title: 'Kinetic Identity & 3D Brand Systems',
-      subtitle: 'Moving visuals that communicate enterprise credibility',
-      summary: 'Deploying micro-animations, 3D product narratives, and Lottie assets to captivate investors and enterprise buyers in under 3 seconds.',
+      title: 'Sub-Second Digital Architecture & Enterprise UI/UX',
+      subtitle: 'Engineering Zero-Friction Web Systems with Sub-200ms Latency',
+      summary: 'A deep-dive into the technical and cognitive mechanics of world-class digital experiences: latency thresholds, tabular typographic systems, and anti-slop design discipline.',
       highlights: [
-        'Compositor-only animation performance benchmarks',
-        '60 FPS web optimization for complex 3D assets',
-        'Bridging the gap between cinema-grade craft and load speed'
-      ]
+        'The 200ms Cognitive Rule: Why perceived speed dictates enterprise credibility',
+        'Zero-Pill Metadata Discipline: Preventing visual clutter and cognitive fatigue',
+        'Fluid Responsive Breakpoints: Handheld mobile web parity with 4K widescreen displays',
+        'Headless Architecture & Static Optimization: Delivering sub-second worldwide load times'
+      ],
+      fullContent: [
+        'Every millisecond of latency is a tax on user focus and conversion. When an interface delays response or stutters during scrolling, the human subconscious immediately registers hesitation, eroding trust at a primal neurological level.',
+        'Modern enterprise UI/UX requires disciplined visual restraint. We adhere strictly to zero-pill metadata rules, ensuring information is structured through clear typographic scale, tabular numerals, and deliberate negative space rather than nested cards and decorative pills.',
+        'Our engineering architecture leverages modern React, Vite, and edge distribution to render pages under 400 milliseconds globally. With 60 FPS compositor-only transitions, interfaces feel physically real and effortlessly intuitive.'
+      ],
+      actionChecklist: [
+        'Benchmark Core Web Vitals to guarantee 95+ performance on mobile networks.',
+        'Replace pill badges with clean monospace typographic labels and subtle border dividers.',
+        'Ensure interactive hover states provide sub-100ms visual and haptic feedback.'
+      ],
+      executiveNote: 'Great design is invisible. If the user notices the interface rather than their objective, the UX has failed.'
     },
     {
       number: '04',
-      title: 'Full-Funnel Conversion Architecture',
-      subtitle: 'Turning cold organic and paid traffic into retained accounts',
-      summary: 'Engineering seamless lead-capture funnels, transparent scope calculators, and onboarding journeys that compound lifetime value.',
+      title: 'Executive Publication & High-Converting Ebook Systems',
+      subtitle: 'Designing 48-Page High-Converting Lead Magnet Assets for B2B & Luxury',
+      summary: 'How to build authoritative multi-page publications that establish institutional stature, generate thousands of high-ACV sales leads, and turn passive readers into consultative partners.',
       highlights: [
-        'Above-the-fold value proposition formulas',
-        'Dynamic qualification and frictionless contact desks',
-        'Post-launch CRO analytics and continuous testing matrix'
-      ]
+        'Editorial Grid Systems: Column architecture, pull quotes, and visual pacing',
+        '3D Book Cover & Packaging Mockups that drive 3x higher download click-through rates',
+        'Interactive Clickable PDFs: Embedding dynamic agendas, worksheets, and direct meeting links',
+        'The Distribution Machine: Repurposing publication chapters into 30 days of viral content'
+      ],
+      fullContent: [
+        'Whitepapers and ebooks are the cornerstone of high-value enterprise pipeline generation. Yet most organizations treat them as uninspired Word document exports with dense walls of unformatted text, sabotaging their own thought leadership.',
+        'We engineer publications that read like luxury art books and Wall Street executive briefs. By combining striking editorial typography, custom infographic diagrams, and tactile cover mockups, our publications position your leadership team as preeminent industry authorities.',
+        'Furthermore, an executive book is an evergreen content engine. Each chapter is strategically structured so it can be unbundled into LinkedIn carousels, Twitter breakdown threads, vertical reel scripts, and newsletter editions, maximizing content ROI.'
+      ],
+      actionChecklist: [
+        'Format all multi-page PDFs with clickable bookmarks and table-of-contents hyperlinks.',
+        'Include an actionable 3-point checklist at the conclusion of every chapter.',
+        'Incorporate high-contrast pull quotes every 3 spreads to maintain reader rhythm.'
+      ],
+      executiveNote: 'A book is a tangible token of authority. Craft it with the same rigor you apply to your flagship product.'
+    },
+    {
+      number: '05',
+      title: 'The Commercial Growth Funnel & Lead Acceleration',
+      subtitle: 'Converting High-Intent Traffic into Retained Enterprise Contracts',
+      summary: 'Architecting high-converting digital desks: above-the-fold value proposition formulas, dynamic interactive brief intake forms, and consultative closing mechanics.',
+      highlights: [
+        'The Above-the-Fold Law: Communicating category, capability, and proof within 3 seconds',
+        'Interactive Service & Scope Calculators: Qualifying budget parameters before the first call',
+        'Social Proof Architecture: Structuring client reviews and metrics for maximum believability',
+        'Post-Launch CRO Testing: Continuous headline and CTA experimentation cadences'
+      ],
+      fullContent: [
+        'Traffic without conversion is vanity. Many agencies celebrate impressions and clicks while founders look at stagnant pipeline figures. A high-performing digital studio website must function as a precision sales instrument.',
+        'We design conversion funnels that respect user intelligence. Instead of aggressive popup modals and fabricated countdown timers, we build trust through transparent deliverables, realistic project timelines, verified client case metrics, and clear budgetary ranges.',
+        'Our dynamic project intake desks enable prospective clients to select exact services, budget tiers, and delivery timeframes in seconds, delivering pre-qualified, motivated leads straight into leadership calendars.'
+      ],
+      actionChecklist: [
+        'Audit your contact form: Eliminate every question that can be answered on an introductory call.',
+        'Feature verifiable metrics (revenue generated, timeline, client names) beside every portfolio case.',
+        'Ensure direct email and phone contact options are permanently visible alongside forms.'
+      ],
+      executiveNote: 'Friction is the enemy of revenue. Make initiating a conversation with your leadership effortless.'
+    },
+    {
+      number: '06',
+      title: 'Director-Level Creative Governance & Agency Collaboration',
+      subtitle: 'The No-Bureaucracy Studio Model: Direct Access to Principals',
+      summary: 'Why traditional agency account manager hierarchies fail ambitious companies and how working directly with principal design directors accelerates product velocity by 3x.',
+      highlights: [
+        'The Direct Collaboration Advantage: Eliminating middleman game-of-phone errors',
+        'Sprint Velocity Benchmarks: Turning 6-month legacy agency timelines into 3-week deployments',
+        '100% Client Ownership of Source Artifacts: Figma systems, 3D raw scenes, and codebases',
+        'Leadership Governance: Eman Tariq & Zara Amin Khan on maintaining uncompromising studio craft'
+      ],
+      fullContent: [
+        'The legacy agency model is fundamentally broken. Clients pay premium retainers only to find their projects delegated to junior interns, with communication funneled through junior account managers who lack design and technical comprehension.',
+        'The Motive Studio operates on an elite direct-access model. When you partner with us, you work directly with our principal directors — Eman Tariq (CEO) and Zara Amin Khan (Co-Founder & Creative Director). Strategic decisions are made in real time without bureaucratic handoffs.',
+        'All intellectual property, Figma design files, 3D project archives, and full-stack codebases remain 100% client-owned from day one. We build assets engineered to power your commercial growth for the next decade.'
+      ],
+      actionChecklist: [
+        'Establish direct communication channels between client decision-makers and studio principals.',
+        'Mandate weekly live interactive prototype walkthroughs rather than static slide decks.',
+        'Require all production source files to be organized in structured Google Drive client portals.'
+      ],
+      executiveNote: 'Ideas are easy. Execution wins. Great partnerships are built on speed, clarity, and uncompromising excellence.'
     }
   ]
 };

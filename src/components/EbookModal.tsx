@@ -63,18 +63,133 @@ export const EbookModal: React.FC<EbookModalProps> = ({
   };
 
   const simulateDownloadFile = () => {
-    // Generate simulated downloadable file
-    const content = `THE MOTIVE EBOOK: Brand & Digital Mastery\nPublished by The Motive Studio (2026)\n\nThank you for downloading our strategic executive guide.\nVisit: https://themotivestudio.com\nEmail: hello@themotivestudio.com\n\nChapters:\n1. The Neurological Brand Moat\n2. Sub-Second UI/UX Engineering\n3. Kinetic Identity & 3D Brand Systems\n4. Full-Funnel Conversion Architecture\n\n© 2026 The Motive Studio. All Rights Reserved.`;
-    const blob = new Blob([content], { type: 'text/plain' });
+    // Generate comprehensive executive HTML publication
+    const chaptersHtml = (ebook.chapters || [])
+      .map(
+        (ch) => `
+        <div style="margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid #e2e8f0;">
+          <div style="font-family: monospace; font-size: 13px; font-weight: bold; color: #0066ff; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;">
+            MODULE ${ch.number}
+          </div>
+          <h2 style="font-size: 26px; font-weight: 900; color: #0f172a; margin: 0 0 8px 0; line-height: 1.2;">
+            ${ch.title}
+          </h2>
+          <div style="font-size: 15px; color: #0066ff; font-style: italic; margin-bottom: 16px;">
+            "${ch.subtitle}"
+          </div>
+          <p style="font-size: 15px; line-height: 1.7; color: #334155; margin-bottom: 20px;">
+            ${ch.summary}
+          </p>
+
+          ${
+            ch.fullContent && ch.fullContent.length > 0
+              ? `
+            <div style="background: #f8fafc; border-left: 3px solid #0066ff; padding: 18px 24px; border-radius: 8px; margin-bottom: 20px;">
+              ${ch.fullContent.map((p) => `<p style="font-size: 14px; line-height: 1.7; color: #1e293b; margin-bottom: 12px;">${p}</p>`).join('')}
+            </div>
+            `
+              : ''
+          }
+
+          <div style="margin-top: 20px;">
+            <h4 style="font-size: 12px; font-family: monospace; text-transform: uppercase; letter-spacing: 1.5px; color: #64748b; margin-bottom: 10px;">
+              Key Framework Takeaways:
+            </h4>
+            <ul style="padding-left: 20px; font-size: 14px; line-height: 1.7; color: #1e293b; margin-bottom: 18px;">
+              ${ch.highlights.map((h) => `<li style="margin-bottom: 6px;"><strong>${h}</strong></li>`).join('')}
+            </ul>
+          </div>
+
+          ${
+            ch.actionChecklist && ch.actionChecklist.length > 0
+              ? `
+            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 16px 20px; margin-top: 16px;">
+              <div style="font-size: 12px; font-weight: bold; color: #1e40af; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">
+                Actionable Implementation Checklist:
+              </div>
+              <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: #1e3a8a; line-height: 1.6;">
+                ${ch.actionChecklist.map((c) => `<li style="margin-bottom: 4px;">[ ] ${c}</li>`).join('')}
+              </ul>
+            </div>
+            `
+              : ''
+          }
+
+          ${
+            ch.executiveNote
+              ? `
+            <div style="margin-top: 16px; font-size: 13px; color: #475569; font-style: italic; background: #fff; border: 1px dashed #cbd5e1; padding: 12px 16px; border-radius: 6px;">
+              Director Note: "${ch.executiveNote}"
+            </div>
+            `
+              : ''
+          }
+        </div>
+      `
+      )
+      .join('');
+
+    const documentHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>${ebook.title} – The Motive Studio Executive Edition</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      max-width: 860px;
+      margin: 40px auto;
+      padding: 0 30px;
+      color: #0f172a;
+      background: #ffffff;
+      line-height: 1.6;
+    }
+    @media print {
+      body { max-width: 100%; margin: 0; padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div style="border-bottom: 3px solid #0066ff; padding-bottom: 24px; margin-bottom: 40px;">
+    <div style="font-size: 12px; font-family: monospace; font-weight: bold; color: #0066ff; letter-spacing: 3px; text-transform: uppercase;">
+      THE MOTIVE STUDIO · OFFICIAL EXECUTIVE PUBLICATION
+    </div>
+    <h1 style="font-size: 38px; font-weight: 900; margin: 12px 0 6px 0; color: #0f172a;">
+      ${ebook.title}
+    </h1>
+    <div style="font-size: 20px; font-weight: 600; color: #475569; margin-bottom: 16px;">
+      ${ebook.subtitle}
+    </div>
+    <p style="font-size: 15px; color: #64748b; line-height: 1.6; max-width: 720px;">
+      ${ebook.description}
+    </p>
+    <div style="margin-top: 16px; font-size: 13px; color: #0066ff; font-weight: bold;">
+      Curated by Eman Tariq (CEO) &amp; Zara Amin Khan (Co-Founder &amp; Creative Director) · themotivestudio.com
+    </div>
+  </div>
+
+  <div style="margin-bottom: 40px;">
+    ${chaptersHtml}
+  </div>
+
+  <div style="text-align: center; padding-top: 30px; border-top: 2px solid #0f172a; font-size: 13px; color: #64748b;">
+    <p><strong>The Motive Studio</strong> · We Create. You Grow.</p>
+    <p>Inquiries: hello@themotivestudio.com · Islamabad / Remote Globally</p>
+    <p style="font-size: 11px;">© 2026 The Motive Studio. All Rights Reserved. Client Ownership Guaranteed.</p>
+  </div>
+</body>
+</html>`;
+
+    const blob = new Blob([documentHtml], { type: 'text/html;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'The_Motive_Ebook_2026.txt';
+    a.download = 'The_Motive_Playbook_2026_Executive_Edition.html';
     document.body.appendChild(a);
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
-    showToast('Downloaded The_Motive_Ebook_2026.txt!');
+    showToast('Downloaded Complete Executive Publication (HTML / Printable PDF)!');
   };
 
   return (
@@ -296,23 +411,59 @@ export const EbookModal: React.FC<EbookModalProps> = ({
                 "{selectedChapter.subtitle}"
               </div>
 
-              <p className="text-sm text-neutral-300 leading-relaxed">
+              <p className="text-sm text-neutral-300 leading-relaxed font-normal">
                 {selectedChapter.summary}
               </p>
 
+              {/* Full Chapter In-Depth Curriculum Content */}
+              {selectedChapter.fullContent && selectedChapter.fullContent.length > 0 && (
+                <div className="space-y-3 pt-2">
+                  {selectedChapter.fullContent.map((para, pIdx) => (
+                    <p key={pIdx} className="text-xs sm:text-sm text-neutral-300 leading-relaxed bg-white/5 p-3.5 rounded-xl border border-white/5">
+                      {para}
+                    </p>
+                  ))}
+                </div>
+              )}
+
+              {/* Core Framework Takeaways */}
               <div className="pt-4 border-t border-white/10">
-                <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-neutral-400 mb-3">
+                <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-[#7fb0ff] mb-3">
                   Core Framework Takeaways:
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   {selectedChapter.highlights.map((h) => (
-                    <div key={h} className="flex items-center gap-2 text-xs text-neutral-200">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <div key={h} className="flex items-start gap-2.5 text-xs text-neutral-200 bg-white/5 p-2.5 rounded-lg border border-white/5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                       <span>{h}</span>
                     </div>
                   ))}
                 </div>
               </div>
+
+              {/* Actionable Implementation Checklist */}
+              {selectedChapter.actionChecklist && selectedChapter.actionChecklist.length > 0 && (
+                <div className="p-4 rounded-xl bg-[#0066ff]/10 border border-[#0066ff]/25 space-y-2">
+                  <div className="text-xs font-mono font-bold uppercase tracking-wider text-[#7fb0ff]">
+                    Actionable Implementation Checklist:
+                  </div>
+                  <div className="space-y-1.5">
+                    {selectedChapter.actionChecklist.map((c, cIdx) => (
+                      <div key={cIdx} className="flex items-center gap-2 text-xs text-neutral-200">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#0066ff]" />
+                        <span>{c}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Executive Director Note */}
+              {selectedChapter.executiveNote && (
+                <div className="text-xs text-neutral-400 italic bg-black/40 border border-white/10 p-3 rounded-xl">
+                  <strong className="text-white not-italic">Director Insight:</strong> "{selectedChapter.executiveNote}"
+                </div>
+              )}
             </div>
 
             <div className="flex justify-between items-center pt-2">

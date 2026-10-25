@@ -27,8 +27,13 @@ import {
   MessageSquare,
   Lock,
   ShieldCheck,
+  Wand2,
+  Globe,
+  RefreshCw,
+  FileText,
 } from 'lucide-react';
 import { MotiveLogo } from './MotiveLogo';
+import { removeBackground } from '../utils/imageUtils';
 
 export const StudioEditDrawer: React.FC = () => {
   const {
@@ -39,6 +44,8 @@ export const StudioEditDrawer: React.FC = () => {
     updateReview,
     deleteReview,
     resetToDefaults,
+    saveToServer,
+    isSaving,
     isDrawerOpen,
     setIsDrawerOpen,
     toastMessage,
@@ -66,6 +73,12 @@ export const StudioEditDrawer: React.FC = () => {
   const [confirmPasscode, setConfirmPasscode] = useState('');
   const [passcodeError, setPasscodeError] = useState('');
 
+  // Auto Background Remover state
+  const [isRemovingBg, setIsRemovingBg] = useState(false);
+  const [bgRemoveMode, setBgRemoveMode] = useState<'white' | 'black' | 'auto'>('white');
+  const [bgTolerance, setBgTolerance] = useState<number>(32);
+  const [autoRemoveOnUpload, setAutoRemoveOnUpload] = useState<boolean>(true);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fontOptions: { id: 'Montserrat' | 'Plus Jakarta Sans' | 'Inter' | 'Outfit'; label: string; desc: string }[] = [
@@ -84,25 +97,77 @@ export const StudioEditDrawer: React.FC = () => {
     { name: 'Warm Amber', hex: '#f59e0b' },
   ];
 
-  // Upload custom logo from user's local disk
+  // Upload custom logo from user's local disk with optional Auto Background Remover
   const handleLogoFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        alert('File size exceeds 5MB. Please upload a smaller image.');
+      if (file.size > 8 * 1024 * 1024) {
+        alert('File size exceeds 8MB. Please upload a smaller image.');
         return;
       }
       const reader = new FileReader();
-      reader.onload = (event) => {
-        const dataUrl = event.target?.result as string;
+      reader.onload = async (event) => {
+        let dataUrl = event.target?.result as string;
+
+        if (autoRemoveOnUpload) {
+          setIsRemovingBg(true);
+          try {
+            dataUrl = await removeBackground(dataUrl, {
+              mode: bgRemoveMode,
+              tolerance: bgTolerance,
+            });
+            showToast('Logo uploaded and white background automatically removed!');
+          } catch (err) {
+            console.warn('Auto bg removal skipped:', err);
+          } finally {
+            setIsRemovingBg(false);
+          }
+        } else {
+          showToast('Custom logo uploaded!');
+        }
+
         updateField('branding', {
           customLogoUrl: dataUrl,
           useOfficialVectorLogo: false,
         });
-        showToast('Your custom logo was uploaded and applied!');
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  // Run Auto Background Remover on the active custom logo URL
+  const handleRunAutoBgRemover = async () => {
+    const targetUrl = content.branding.customLogoUrl;
+    if (!targetUrl || targetUrl.trim() === '') {
+      alert('Please upload or enter a logo image first.');
+      return;
+    }
+
+    setIsRemovingBg(true);
+    try {
+      const transparentDataUrl = await removeBackground(targetUrl, {
+        mode: bgRemoveMode,
+        tolerance: bgTolerance,
+      });
+      updateField('branding', { customLogoUrl: transparentDataUrl });
+      showToast('Magic BG Remover finished! Background removed cleanly.');
+    } catch (err: any) {
+      alert('Failed to remove background: ' + (err.message || 'Make sure the image is accessible'));
+    } finally {
+      setIsRemovingBg(false);
+    }
+  };
+
+  // Export content.json for repository / Vercel permanent deployment
+  const handleDownloadContentJson = () => {
+    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(content, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute('href', dataStr);
+    downloadAnchor.setAttribute('download', 'content.json');
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+    showToast('Downloaded content.json! Commit to public/content.json for permanent live deployment.');
   };
 
   const handleExportJSON = () => {
@@ -168,8 +233,20 @@ export const StudioEditDrawer: React.FC = () => {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
+                  onClick={saveToServer}
+                  disabled={isSaving}
+                  className="px-3 py-1.5 rounded-lg bg-[#0066ff] hover:bg-[#0052cc] text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-md shadow-[#0066ff]/25"
+                  title="Save and publish directly to live site & server"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isSaving ? 'animate-spin' : ''}`} />
+                  <span>{isSaving ? 'Publishing...' : 'Publish Live'}</span>
+                </button>
+
+                <button
+                  type="button"
                   onClick={() => {
                     sessionStorage.removeItem('motive_owner_authenticated');
+                    localStorage.removeItem('motive_owner_authenticated');
                     setIsDrawerOpen(false);
                     showToast('Studio CMS Locked');
                   }}
@@ -239,55 +316,149 @@ export const StudioEditDrawer: React.FC = () => {
               {/* BRANDING & LOGO TAB */}
               {activeTab === 'branding' && (
                 <div className="space-y-6">
+                  {/* Official Vector Logo Styles Switcher */}
+                  <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#7fb0ff]">
+                        Official Vector Logo Mark Style
+                      </label>
+                      <span className="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                        Adaptive High Contrast
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2.5">
+                      {[
+                        { id: 'signature', label: 'Signature M', desc: 'Electric 3D wing facet' },
+                        { id: 'minimal', label: 'Modern Hex M', desc: 'Dual-stroke keystone' },
+                        { id: 'crest', label: 'Luxury Crest', desc: 'Architectural shield' },
+                      ].map((styleOpt) => (
+                        <button
+                          key={styleOpt.id}
+                          type="button"
+                          onClick={() => {
+                            updateField('branding', {
+                              logoStyle: styleOpt.id as any,
+                              useOfficialVectorLogo: true,
+                            });
+                            showToast(`Logo style updated to ${styleOpt.label}!`);
+                          }}
+                          className={`p-3 rounded-xl border text-left cursor-pointer transition-all ${
+                            (content.branding.logoStyle || 'signature') === styleOpt.id
+                              ? 'border-[#0066ff] bg-[#0066ff]/20 text-white shadow-sm'
+                              : 'border-white/10 bg-white/5 text-neutral-300 hover:bg-white/10'
+                          }`}
+                        >
+                          <div className="font-bold text-xs">{styleOpt.label}</div>
+                          <div className="text-[10px] text-neutral-400 mt-0.5">{styleOpt.desc}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   {/* Active Logo Preview */}
                   <div className="p-5 rounded-2xl bg-white/5 border border-white/10 space-y-4">
                     <div className="flex items-center justify-between">
                       <label className="block text-xs font-mono font-bold uppercase tracking-wider text-[#7fb0ff]">
-                        Official Logo Previews
+                        Live Navbar &amp; Presentation Previews
                       </label>
-                      <span className="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                        Active &amp; Vector-Crisp
+                      <span className="text-[11px] font-semibold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20">
+                        Both Black &amp; White Themes Supported
                       </span>
                     </div>
 
-                    {/* Dark Theme Header/Footer Preview */}
+                    {/* Smoked Slate Titanium Navbar Capsule Preview */}
                     <div>
-                      <div className="text-[11px] text-neutral-400 mb-1.5 font-medium">Dark Header &amp; Footer Lockup:</div>
-                      <div className="p-5 rounded-xl bg-[#111111] border border-white/15 flex items-center justify-center min-h-[80px]">
-                        <MotiveLogo
-                          variant="horizontal"
-                          customLogoUrl={content.branding.customLogoUrl}
-                          theme="dark"
-                        />
+                      <div className="text-[11px] text-neutral-400 mb-1.5 font-medium">New Smoked Titanium Slate Navbar (Adaptive):</div>
+                      <div className="p-4 rounded-xl bg-[#181c24] border border-white/15 flex items-center justify-center min-h-[75px]">
+                        <div className="px-3.5 py-1.5 rounded-2xl bg-white/[0.08] border border-white/15 shadow-sm backdrop-blur-md">
+                          <MotiveLogo
+                            variant="horizontal"
+                            customLogoUrl={content.branding.customLogoUrl}
+                            logoStyle={content.branding.logoStyle || 'signature'}
+                            theme="dark"
+                          />
+                        </div>
                       </div>
                     </div>
 
-                    {/* Light Plaque Card (Matching Uploaded Asset) */}
+                    {/* Light Plaque Card */}
                     <div>
-                      <div className="text-[11px] text-neutral-400 mb-1.5 font-medium">Official White Presentation Card:</div>
+                      <div className="text-[11px] text-neutral-400 mb-1.5 font-medium">Official Light Presentation Plaque:</div>
                       <div className="p-4 rounded-xl bg-white border border-black/10 flex items-center justify-center">
                         <MotiveLogo
                           variant="horizontal"
                           customLogoUrl={content.branding.customLogoUrl}
+                          logoStyle={content.branding.logoStyle || 'signature'}
                           theme="light"
                         />
                       </div>
                     </div>
                   </div>
 
-                  {/* Direct Logo Upload Option */}
-                  <div className="p-5 rounded-2xl bg-[#0066ff]/10 border border-[#0066ff]/30 space-y-3">
-                    <div className="flex items-center gap-2">
-                      <ImageIcon className="w-4 h-4 text-[#7fb0ff]" />
-                      <span className="text-xs font-bold text-white uppercase tracking-wider">
-                        Upload Your Own Logo File
+                  {/* Auto Background Remover & Upload */}
+                  <div className="p-5 rounded-2xl bg-[#0066ff]/10 border border-[#0066ff]/30 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Wand2 className="w-4 h-4 text-[#7fb0ff]" />
+                        <span className="text-xs font-bold text-white uppercase tracking-wider">
+                          Auto Background Remover (Magic Transparent)
+                        </span>
+                      </div>
+                      <span className="text-[10px] font-mono font-bold text-cyan-300 bg-cyan-500/20 px-2 py-0.5 rounded-full border border-cyan-400/30">
+                        Client-Side Engine
                       </span>
                     </div>
-                    <p className="text-xs text-neutral-300">
-                      Upload your exact PNG, JPG or SVG logo file from your computer:
+
+                    <p className="text-xs text-neutral-300 leading-relaxed">
+                      Upload your logo file or paste a URL. Our background remover automatically detects and removes solid white or black boxes, outputting a crisp transparent PNG with anti-aliased edge smoothing.
                     </p>
 
-                    <div className="flex items-center gap-3">
+                    {/* Mode & Sensitivity Controls */}
+                    <div className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-black/40 border border-white/10">
+                      <div>
+                        <label className="text-[10px] font-mono uppercase text-neutral-400 block mb-1">
+                          Background Color:
+                        </label>
+                        <select
+                          value={bgRemoveMode}
+                          onChange={(e) => setBgRemoveMode(e.target.value as any)}
+                          className="w-full bg-[#1c202a] border border-white/20 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none"
+                        >
+                          <option value="white">Remove White (#FFFFFF)</option>
+                          <option value="black">Remove Black (#000000)</option>
+                          <option value="auto">Auto-Detect Corner Color</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] font-mono uppercase text-neutral-400 block mb-1">
+                          Sensitivity ({bgTolerance}%):
+                        </label>
+                        <input
+                          type="range"
+                          min="10"
+                          max="80"
+                          value={bgTolerance}
+                          onChange={(e) => setBgTolerance(Number(e.target.value))}
+                          className="w-full accent-[#0066ff] cursor-pointer mt-1"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <label className="inline-flex items-center gap-2 text-xs text-neutral-300 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={autoRemoveOnUpload}
+                          onChange={(e) => setAutoRemoveOnUpload(e.target.checked)}
+                          className="rounded accent-[#0066ff]"
+                        />
+                        <span>Auto-remove background when selecting a new logo file</span>
+                      </label>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2.5 pt-1">
                       <input
                         type="file"
                         ref={fileInputRef}
@@ -298,11 +469,24 @@ export const StudioEditDrawer: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0066ff] hover:bg-[#0052cc] text-white text-xs font-bold transition-colors cursor-pointer"
+                        disabled={isRemovingBg}
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0066ff] hover:bg-[#0052cc] text-white text-xs font-bold transition-colors cursor-pointer disabled:opacity-50"
                       >
                         <Upload className="w-3.5 h-3.5" />
-                        <span>Choose Logo File...</span>
+                        <span>{isRemovingBg ? 'Processing...' : 'Choose Logo File...'}</span>
                       </button>
+
+                      {content.branding.customLogoUrl && (
+                        <button
+                          type="button"
+                          onClick={handleRunAutoBgRemover}
+                          disabled={isRemovingBg}
+                          className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-purple-600/30 hover:bg-purple-600/50 border border-purple-500/40 text-purple-200 text-xs font-bold transition-colors cursor-pointer disabled:opacity-50"
+                        >
+                          <Wand2 className="w-3.5 h-3.5" />
+                          <span>{isRemovingBg ? 'Removing...' : 'Auto-Remove BG Now'}</span>
+                        </button>
+                      )}
 
                       {content.branding.customLogoUrl && (
                         <button
@@ -312,11 +496,11 @@ export const StudioEditDrawer: React.FC = () => {
                               customLogoUrl: '',
                               useOfficialVectorLogo: true,
                             });
-                            showToast('Restored default official logo');
+                            showToast('Restored default official vector logo');
                           }}
                           className="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-xs text-neutral-300 font-semibold cursor-pointer"
                         >
-                          Reset to Official
+                          Reset to Vector
                         </button>
                       )}
                     </div>
@@ -335,6 +519,60 @@ export const StudioEditDrawer: React.FC = () => {
                       }
                       className="w-full bg-white/5 border border-white/15 focus:border-[#0066ff] rounded-xl px-4 py-2.5 text-sm text-white outline-none"
                     />
+                    <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                      <span className="text-[10px] font-mono text-neutral-400 mr-1">Presets:</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          updateField('branding', {
+                            customLogoUrl: '/logo_dark_theme.png',
+                            useOfficialVectorLogo: false,
+                          });
+                          showToast('Switched to Dark Theme Official Logo (White Text + Blue Wing)');
+                        }}
+                        className={`text-[11px] px-2.5 py-1 rounded-lg border cursor-pointer transition-all ${
+                          content.branding.customLogoUrl === '/logo_dark_theme.png'
+                            ? 'bg-[#0066ff]/25 border-[#0066ff] text-white font-bold'
+                            : 'bg-white/5 border-white/10 text-neutral-300 hover:bg-white/10'
+                        }`}
+                      >
+                        Official Dark (White Text)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          updateField('branding', {
+                            customLogoUrl: '/logo_light_theme.png',
+                            useOfficialVectorLogo: false,
+                          });
+                          showToast('Switched to Light Theme Official Logo (Black Text + Blue Wing)');
+                        }}
+                        className={`text-[11px] px-2.5 py-1 rounded-lg border cursor-pointer transition-all ${
+                          content.branding.customLogoUrl === '/logo_light_theme.png'
+                            ? 'bg-[#0066ff]/25 border-[#0066ff] text-white font-bold'
+                            : 'bg-white/5 border-white/10 text-neutral-300 hover:bg-white/10'
+                        }`}
+                      >
+                        Official Light (Black Text)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          updateField('branding', {
+                            customLogoUrl: '/public/assets/aistudio/WhatsApp_Image_2026-10-05_at_1.50.00_PM-removebg-preview_5adf7cc5.png',
+                            useOfficialVectorLogo: false,
+                          });
+                          showToast('Switched to Uploaded WhatsApp Asset');
+                        }}
+                        className={`text-[11px] px-2.5 py-1 rounded-lg border cursor-pointer transition-all ${
+                          content.branding.customLogoUrl?.includes('WhatsApp_Image')
+                            ? 'bg-[#0066ff]/25 border-[#0066ff] text-white font-bold'
+                            : 'bg-white/5 border-white/10 text-neutral-300 hover:bg-white/10'
+                        }`}
+                      >
+                        Original Uploaded File
+                      </button>
+                    </div>
                   </div>
 
                   <div>
@@ -1448,16 +1686,26 @@ export const StudioEditDrawer: React.FC = () => {
             </div>
 
             {/* Footer Actions */}
-            <div className="p-4 sm:p-5 border-t border-white/10 bg-[#111111] flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
+            <div className="p-4 sm:p-5 border-t border-white/10 bg-[#111111] flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleDownloadContentJson}
+                  className="px-3 py-2 rounded-lg bg-[#0066ff]/20 hover:bg-[#0066ff]/30 text-white border border-[#0066ff]/30 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                  title="Download content.json to commit to public/ folder for Vercel/GitHub permanent live hosting"
+                >
+                  <FileText className="w-3.5 h-3.5 text-[#7fb0ff]" />
+                  <span>Download content.json (For Vercel)</span>
+                </button>
+
                 <button
                   type="button"
                   onClick={handleExportJSON}
                   className="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-semibold text-neutral-300 flex items-center gap-1.5 cursor-pointer"
-                  title="Export configuration as JSON"
+                  title="Export configuration backup as JSON"
                 >
                   <Download className="w-3.5 h-3.5" />
-                  <span>Export</span>
+                  <span>Backup JSON</span>
                 </button>
 
                 <label className="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-semibold text-neutral-300 flex items-center gap-1.5 cursor-pointer">
@@ -1472,13 +1720,25 @@ export const StudioEditDrawer: React.FC = () => {
                 </label>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setIsDrawerOpen(false)}
-                className="px-6 py-2.5 rounded-full bg-[#0066ff] hover:bg-[#0052cc] text-white text-xs font-bold transition-colors cursor-pointer"
-              >
-                Done
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={saveToServer}
+                  disabled={isSaving}
+                  className="px-4 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 shadow-md shadow-emerald-600/25"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isSaving ? 'animate-spin' : ''}`} />
+                  <span>{isSaving ? 'Publishing...' : 'Save & Publish Live'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsDrawerOpen(false)}
+                  className="px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors cursor-pointer"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>

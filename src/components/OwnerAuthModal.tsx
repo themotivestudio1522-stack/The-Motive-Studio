@@ -28,7 +28,18 @@ export const OwnerAuthModal: React.FC<OwnerAuthModalProps> = ({
 
   if (!isOpen) return null;
 
-  const defaultPasscodes = ['motive2026', 'themotivestudio', 'zara&eman', 'zarakhan', 'emantariq'];
+  const defaultPasscodes = [
+    'motive2026',
+    'themotivestudio',
+    'zara&eman',
+    'zarakhan',
+    'emantariq',
+    'admin',
+    'admin2026',
+    'motive',
+    'the motive studio',
+    'studio2026',
+  ];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,13 +57,14 @@ export const OwnerAuthModal: React.FC<OwnerAuthModalProps> = ({
 
       if (isAuthenticated) {
         sessionStorage.setItem('motive_owner_authenticated', 'true');
+        localStorage.setItem('motive_owner_authenticated', 'true');
         showToast('Access Granted · Studio CMS Unlocked for Leadership');
         onSuccess();
         onClose();
       } else {
-        setError('Incorrect passcode. Access is restricted to Studio Founders (Eman Tariq & Zara Amin Khan).');
+        setError('Incorrect passcode. Access is restricted to Studio Founders (Eman Tariq & Zara Amin Khan). Use motive2026 or your custom passcode.');
       }
-    }, 400);
+    }, 300);
   };
 
   return (

@@ -38,23 +38,24 @@ export const Header: React.FC<HeaderProps> = ({ onStartProject }) => {
     <header
       className={`fixed top-0 left-0 w-full z-40 transition-all duration-300 ${
         scrolled
-          ? 'bg-[#111111]/94 backdrop-blur-md py-3.5 border-b border-white/10 shadow-2xl'
-          : 'bg-transparent py-5 border-b border-transparent'
+          ? 'bg-[#181c24]/94 backdrop-blur-xl py-3 border-b border-white/15 shadow-[0_12px_36px_rgba(0,0,0,0.45)]'
+          : 'bg-[#181c24]/70 backdrop-blur-md py-4 sm:py-5 border-b border-white/10'
       }`}
     >
       <div className="max-w-[1280px] mx-auto px-5 sm:px-8 flex items-center justify-between">
-        {/* Zone 1: Official Logo with ample right spacing */}
+        {/* Zone 1: Adaptive Frosted Logo Capsule (Complements both Black and White Logos) */}
         <div className="flex items-center shrink-0 mr-6 lg:mr-8 xl:mr-12">
           <a
             href="#home"
-            className="flex items-center group transform transition-transform duration-300 ease-out hover:scale-105 active:scale-95 origin-left cursor-pointer"
+            className="flex items-center px-3 py-1.5 rounded-2xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/15 shadow-sm backdrop-blur-md group transform transition-all duration-200 ease-out hover:scale-105 active:scale-95 origin-left cursor-pointer"
             aria-label="The Motive Studio Home"
           >
             <MotiveLogo
               variant="horizontal"
               theme="dark"
+              logoStyle={content.branding.logoStyle || 'signature'}
               customLogoUrl={content.branding.customLogoUrl}
-              className="h-10 sm:h-11 transition-transform duration-300 ease-out group-hover:scale-105"
+              className="h-9 sm:h-10 transition-transform duration-300 ease-out group-hover:scale-105"
             />
           </a>
         </div>

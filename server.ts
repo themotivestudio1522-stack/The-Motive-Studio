@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI } from '@google/genai';
 
@@ -12,13 +13,54 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
-app.use(express.json());
+// High body size limit to safely handle transparent logo data URLs and full content configs
+app.use(express.json({ limit: '20mb' }));
+
+const CONTENT_FILE_PATH = path.join(__dirname, 'public', 'content.json');
+
+// Studio Dynamic Content API (Persists Admin Edits on Live Node Server)
+app.get('/api/content', async (req, res) => {
+  try {
+    if (fs.existsSync(CONTENT_FILE_PATH)) {
+      const data = await fs.promises.readFile(CONTENT_FILE_PATH, 'utf-8');
+      return res.json(JSON.parse(data));
+    }
+    return res.status(404).json({ message: 'No custom content file found' });
+  } catch (error) {
+    console.error('Error reading content file:', error);
+    return res.status(500).json({ error: 'Failed to read content' });
+  }
+});
+
+app.post('/api/content', async (req, res) => {
+  try {
+    const payload = req.body;
+    if (!payload || typeof payload !== 'object') {
+      return res.status(400).json({ error: 'Invalid content payload' });
+    }
+
+    await fs.promises.writeFile(CONTENT_FILE_PATH, JSON.stringify(payload, null, 2), 'utf-8');
+    return res.json({ success: true, message: 'Content persisted successfully to server' });
+  } catch (error) {
+    console.error('Error persisting content file:', error);
+    return res.status(500).json({ error: 'Failed to save content to server' });
+  }
+});
+
+import { generateStudioConciergeResponse } from './src/utils/studioConcierge.js';
 
 // Initialize Google Gemini Client if API key is present
 let aiClient: GoogleGenAI | null = null;
 if (process.env.GEMINI_API_KEY) {
   try {
-    aiClient = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    aiClient = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build',
+        },
+      },
+    });
   } catch (err) {
     console.error('Failed to initialize GoogleGenAI client:', err);
   }
@@ -27,60 +69,52 @@ if (process.env.GEMINI_API_KEY) {
 // Studio AI Concierge Chatbot Endpoint
 app.post('/api/chat', async (req, res) => {
   try {
-    const { message } = req.body;
+    const { message, history } = req.body;
     if (!message || typeof message !== 'string') {
       return res.status(400).json({ error: 'Message is required' });
     }
 
-    if (!aiClient) {
-      // Return smart fallback if Gemini API key is not yet set
-      return res.json({
-        reply: `Thank you for contacting The Motive Studio! We specialize in 2D Animation, 3D CGI Product Renders, Video Editing, Viral Reels, Executive E-Book Design, Brand Identity, and Full-Stack Web Development. To schedule a discovery call with our directors, please reach us at hello@themotivestudio.com or +1 (415) 890-6420.`
-      });
-    }
-
-    const systemInstruction = `
-You are the official Studio AI Concierge for "The Motive Studio" (Brand Tagline: "WE CREATE. YOU GROW.").
-You represent an elite creative digital agency that specializes in:
-1. 2D Animation & Motion Graphics (Character animation, kinetic typography, Lottie web micro-interactions, explainer videos)
-2. 3D Animation & CGI (Photorealistic 3D product renders, spatial camera loops, luxury lighting simulations, 4K broadcast assets)
-3. Video Editing & Post-Production (Commercial cuts, brand documentaries, high-retention editing, color grading, sound design)
-4. Reels & Short-Form Content (High-retention vertical 9:16 videos for Instagram Reels, TikTok, YouTube Shorts, viral hook scripting, dynamic captions)
-5. E-Book Design & Publishing Systems (Executive 48-page publication layout, 3D book cover mockups, interactive clickable PDFs, lead-magnet funnels)
-6. Brand Strategy & Identity (Monogram logomarks, typography systems, style guides, physical packaging)
-7. Website Design & Full-Stack Web Development (Ultra-fast, sub-second load times, headless CMS, modern React architecture)
-8. UI/UX Product Design (Figma design systems, SaaS dashboards, mobile apps)
-9. Digital Marketing & Data Solutions
-
-Pricing Guidelines:
-- Focused sprints (Reels batches, E-Book design, 2D micro-animations) start around $2,500 – $5,000.
-- Comprehensive brand overhauls, 3D CGI packages, and custom full-stack web builds range between $10,000 – $30,000+.
-- All visual assets and codebases are 100% client-owned.
-
-Studio Culture & Tone:
-- Confident, authoritative, professional, respectful, concise, and focused on commercial business growth ("Ideas are easy. Execution wins.").
-- Encourage visitors to start a project brief or schedule a discovery call with our creative directors (hello@themotivestudio.com / +1 (415) 890-6420).
-- Keep answers concise (2-4 sentences max), punchy, and helpful. Never hallucinate fake clients.
+    // If Gemini client is active, attempt generative response
+    if (aiClient) {
+      try {
+        const systemInstruction = `
+You are the official Studio Concierge for "The Motive Studio" (Tagline: "WE CREATE. YOU GROW.").
+Founders: Eman Tariq (CEO) & Zara Amin Khan (Co-Founder & Creative Director).
+Direct Contact: themotivestudio1522@gmail.com | Phone/WhatsApp: 03141025918 / 0317 3150998. Operating remotely worldwide.
+Services: 2D & 3D Animation, Video Editing, Viral Reels, Executive E-Books ("The Motive Playbook"), Brand Identity, and Full-Stack Web Development.
+Pricing: Sprints $1,500–$3,500; Growth $4,000–$9,000; Enterprise $10,000–$25,000+. All IP 100% client-owned.
+Deliver concise, authoritative, professional, and friendly answers (2-3 sentences max).
 `;
 
-    const response = await aiClient.models.generateContent({
-      model: 'gemini-3.8-flash',
-      contents: message,
-      config: {
-        systemInstruction,
-        temperature: 0.6,
-        maxOutputTokens: 300,
-      },
-    });
+        const response = await aiClient.models.generateContent({
+          model: 'gemini-3.8-flash',
+          contents: message,
+          config: {
+            systemInstruction,
+            temperature: 0.6,
+            maxOutputTokens: 250,
+          },
+        });
 
-    const reply = response.text || 'Thank you for reaching out! How can we assist your brand today?';
-    return res.json({ reply });
+        if (response.text && response.text.trim()) {
+          const fallbackActions = generateStudioConciergeResponse(message, history).actions;
+          return res.json({
+            reply: response.text.trim(),
+            actions: fallbackActions,
+          });
+        }
+      } catch (geminiErr: any) {
+        console.warn('Gemini API call failed, falling back to local concierge engine:', geminiErr?.message || geminiErr);
+      }
+    }
+
+    // Execute comprehensive Motive Studio Concierge Engine
+    const conciergeResult = generateStudioConciergeResponse(message, history);
+    return res.json(conciergeResult);
   } catch (error: any) {
-    console.error('Error generating AI response:', error);
-    return res.status(500).json({
-      error: 'Failed to generate response',
-      reply: 'Thanks for reaching out! Our creative directors are currently online and ready to discuss 2D/3D animation, video editing, reels, or brand design. Please reach us at hello@themotivestudio.com or +1 (415) 890-6420.'
-    });
+    console.error('Error generating concierge response:', error);
+    const fallback = generateStudioConciergeResponse(req.body?.message || '');
+    return res.json(fallback);
   }
 });
 
